@@ -74,6 +74,9 @@ docker run --name reelforge-db -e POSTGRES_USER=reelforge \
    social copy. The project page polls `/api/projects/[id]/status`.
 5. **Review & edit** clips: fix captions, tweak AI titles/hooks/hashtags/CTA.
 6. **Export** per platform, or **bulk export** every clip at once (Pro feature).
+   The renderer (`src/lib/render.ts`) reframes each clip to the platform's
+   aspect ratio and burns in styled captions with ffmpeg; the page shows render
+   progress and a download link when each export is ready.
 
 The mock AI produces deterministic, plausible output so this all works offline.
 Set `AI_PROVIDER=claude` (with `ANTHROPIC_API_KEY`, and `OPENAI_API_KEY` for
@@ -120,6 +123,7 @@ reelforge/
 | Command             | Description                          |
 | ------------------- | ------------------------------------ |
 | `npm run dev`       | Start dev server                     |
+| `npm run worker`    | Run the BullMQ job worker (needs `JOB_DRIVER=redis` + `REDIS_URL`) |
 | `npm run build`     | Generate Prisma client + production build |
 | `npm run db:push`   | Sync schema to the database          |
 | `npm run db:seed`   | Seed demo data                       |
@@ -133,7 +137,11 @@ container). For production:
 
 - Point `DATABASE_URL` at managed Postgres (Neon, Supabase, RDS).
 - Set `STORAGE_DRIVER=s3` and implement the S3 client in `src/lib/storage.ts`.
-- Set `JOB_DRIVER=redis` and run a worker calling `runProjectPipeline`.
+- Set `JOB_DRIVER=redis` + `REDIS_URL` and run `npm run worker` (BullMQ) — one
+  or more worker processes handle AI processing and export rendering off the
+  request path.
+- Install `ffmpeg` on the worker host (or set `FFMPEG_PATH`) so exports reframe
+  to 9:16 and burn in captions. Without it, exports fall back to the source clip.
 - Add Stripe keys + a webhook to `/api/stripe/webhook`.
 - Set `AI_PROVIDER=claude` with `ANTHROPIC_API_KEY` + `OPENAI_API_KEY`
   (Claude for clips/copy, Whisper for transcription — see `src/lib/ai/`).

@@ -7,11 +7,14 @@ priority order (revenue and stickiness first):
 
 - [x] **Real AI provider** — Claude for clip selection + brand-aware copy, Whisper
       for transcription (`AI_PROVIDER=claude`), with heuristic fallbacks.
-- [ ] **Real export render** — ffmpeg worker: cut clip, reframe to 9:16, burn
-      captions in the selected style, apply brand kit.
+- [x] **Real export render** — ffmpeg: cut clip, reframe to 9:16 / 1:1, burn in
+      styled captions, watermark free plans (`src/lib/render.ts`).
+- [x] **Redis/BullMQ jobs** — durable queue + separate worker (`npm run worker`),
+      retries with backoff (`src/lib/queue.ts`, `src/worker.ts`).
 - [ ] **S3/R2 storage** — implement `S3StorageDriver`, presigned direct uploads
       for large files.
-- [ ] **Redis/BullMQ jobs** — durable queue + separate worker; retries.
+- [ ] **Audio extraction for long uploads** — pre-extract audio so Whisper's
+      25MB cap doesn't block full-length videos.
 
 ## Sellable growth features
 

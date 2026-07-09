@@ -17,29 +17,39 @@ export async function GET(
 
   const key = params.key.map(decodeURIComponent).join("/");
 
-  // Authorize: the key must belong to a video or brand kit in this workspace.
-  const [video, brandKit] = await Promise.all([
+  // Authorize: the key must belong to a video, brand-kit logo, or rendered
+  // export owned by this workspace.
+  const [video, brandKit, exp] = await Promise.all([
     prisma.video.findFirst({
       where: { storageKey: key, project: { workspaceId: ctx.workspace.id } },
     }),
     prisma.brandKit.findFirst({
       where: { logoKey: key, workspaceId: ctx.workspace.id },
     }),
+    prisma.export.findFirst({
+      where: {
+        storageKey: key,
+        clip: { project: { workspaceId: ctx.workspace.id } },
+      },
+    }),
   ]);
-  if (!video && !brandKit) {
+  if (!video && !brandKit && !exp) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
   try {
     const storage = getStorage();
     const buffer = await storage.get(key);
-    const contentType = video?.mimeType || "application/octet-stream";
-    return new NextResponse(new Uint8Array(buffer), {
-      headers: {
-        "Content-Type": contentType,
-        "Cache-Control": "private, max-age=3600",
-      },
-    });
+    const contentType = video?.mimeType || (exp ? "video/mp4" : "application/octet-stream");
+    const headers: Record<string, string> = {
+      "Content-Type": contentType,
+      "Cache-Control": "private, max-age=3600",
+    };
+    // Rendered exports download as a file.
+    if (exp) {
+      headers["Content-Disposition"] = `attachment; filename="${exp.format.toLowerCase()}-clip.mp4"`;
+    }
+    return new NextResponse(new Uint8Array(buffer), { headers });
   } catch {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }

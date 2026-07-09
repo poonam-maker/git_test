@@ -7,7 +7,7 @@ import { requireWorkspace } from "@/lib/session";
 import { canCreateProject, canExport } from "@/lib/limits";
 import { logEvent } from "@/lib/analytics";
 import { getPlan } from "@/lib/plans";
-import { enqueueProjectProcessing } from "@/lib/jobs";
+import { enqueueProjectProcessing, enqueueExport } from "@/lib/queue";
 import type { ExportFormat } from "@prisma/client";
 
 // All mutations route through here. Each one re-checks the workspace so a user
@@ -135,20 +135,13 @@ export async function createExport(clipId: string, format: ExportFormat) {
     redirect(`/settings?upgrade=1&reason=${encodeURIComponent(gate.reason!)}`);
   }
 
-  // In this MVP the render step is mocked: we mark the export DONE immediately
-  // and point at the source video. A real EXPORT job would burn captions and
-  // reframe to the target aspect ratio via ffmpeg in a worker.
-  const video = await prisma.video.findUnique({
-    where: { projectId: clip.projectId },
+  // Create the export QUEUED and hand it to the job queue. The renderer
+  // (src/lib/render.ts) reframes to the target aspect ratio and burns in
+  // captions via ffmpeg, then flips the export to DONE with its file key.
+  const exp = await prisma.export.create({
+    data: { clipId, format, status: "QUEUED" },
   });
-  await prisma.export.create({
-    data: {
-      clipId,
-      format,
-      status: "DONE",
-      storageKey: video?.storageKey ?? null,
-    },
-  });
+  await enqueueExport(exp.id);
 
   await prisma.workspace.update({
     where: { id: workspace.id },
@@ -173,17 +166,12 @@ export async function bulkExportProject(
     );
   }
   const clips = await prisma.clip.findMany({ where: { projectId } });
-  const video = await prisma.video.findUnique({ where: { projectId } });
   for (const clip of clips) {
     for (const format of formats) {
-      await prisma.export.create({
-        data: {
-          clipId: clip.id,
-          format,
-          status: "DONE",
-          storageKey: video?.storageKey ?? null,
-        },
+      const exp = await prisma.export.create({
+        data: { clipId: clip.id, format, status: "QUEUED" },
       });
+      await enqueueExport(exp.id);
       await logEvent(workspace.id, "EXPORT_CREATED", { format, bulk: true });
     }
   }

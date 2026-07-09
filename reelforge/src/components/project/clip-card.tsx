@@ -21,7 +21,12 @@ interface ClipData {
     hashtags: string[];
     cta: string;
   } | null;
-  exports: { id: string; format: ExportFormat }[];
+  exports: {
+    id: string;
+    format: ExportFormat;
+    status: string;
+    downloadUrl: string | null;
+  }[];
 }
 
 const FORMATS: { key: ExportFormat; label: string }[] = [
@@ -243,7 +248,9 @@ function ExportPanel({
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
-  const done = new Set(existing.map((e) => e.format));
+  // Latest export per format (multiple renders of the same format may exist).
+  const byFormat = new Map<ExportFormat, ClipData["exports"][number]>();
+  for (const e of existing) byFormat.set(e.format, e);
 
   function run(format: ExportFormat) {
     start(async () => {
@@ -255,30 +262,42 @@ function ExportPanel({
   return (
     <div>
       <p className="text-sm text-ink-400">
-        Export this clip in the format each platform expects.
+        Export this clip — reframed to the platform&apos;s aspect ratio with
+        captions burned in.
       </p>
       <div className="mt-4 flex flex-wrap gap-2">
-        {FORMATS.map((f) => (
-          <button
-            key={f.key}
-            onClick={() => run(f.key)}
-            disabled={pending}
-            className={cn(
-              "btn text-sm",
-              done.has(f.key)
-                ? "border border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
-                : "btn-secondary"
-            )}
-          >
-            {done.has(f.key) ? `✓ ${f.label}` : `Export ${f.label}`}
-          </button>
-        ))}
+        {FORMATS.map((f) => {
+          const exp = byFormat.get(f.key);
+          const rendering = exp && (exp.status === "QUEUED" || exp.status === "RUNNING");
+          const ready = exp && exp.status === "DONE";
+          if (ready && exp!.downloadUrl) {
+            return (
+              <a
+                key={f.key}
+                href={exp!.downloadUrl}
+                className="btn border border-emerald-500/40 bg-emerald-500/10 text-sm text-emerald-300"
+              >
+                ⬇ {f.label}
+              </a>
+            );
+          }
+          return (
+            <button
+              key={f.key}
+              onClick={() => run(f.key)}
+              disabled={pending || !!rendering}
+              className={cn(
+                "btn text-sm",
+                rendering
+                  ? "border border-brand-500/40 bg-brand-500/10 text-brand-300"
+                  : "btn-secondary"
+              )}
+            >
+              {rendering ? `Rendering ${f.label}…` : `Export ${f.label}`}
+            </button>
+          );
+        })}
       </div>
-      {existing.length > 0 && (
-        <p className="mt-3 text-xs text-ink-500">
-          {existing.length} export{existing.length > 1 ? "s" : ""} ready to download.
-        </p>
-      )}
     </div>
   );
 }

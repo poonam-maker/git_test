@@ -4,7 +4,7 @@ import { getSessionContext } from "@/lib/session";
 import { getStorage, newKey } from "@/lib/storage";
 import { getPlan } from "@/lib/plans";
 import { logEvent } from "@/lib/analytics";
-import { enqueueProjectProcessing } from "@/lib/jobs";
+import { enqueueProjectProcessing } from "@/lib/queue";
 
 export const runtime = "nodejs";
 

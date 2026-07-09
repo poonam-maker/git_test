@@ -75,7 +75,8 @@ Design decisions:
 | ------------------- | ---------------------------- | ----------- | ---------------------------------- |
 | `AIProvider`        | `src/lib/ai/`                | `mock`      | `claude` (Claude + Whisper)        |
 | `StorageDriver`     | `src/lib/storage.ts`         | `local`     | S3 / R2 / MinIO                    |
-| Job driver          | `src/lib/jobs.ts`            | `inline`    | Redis + BullMQ worker              |
+| Job driver          | `src/lib/queue.ts`           | `inline`    | Redis + BullMQ (`npm run worker`)  |
+| Export renderer     | `src/lib/render.ts`          | ffmpeg      | ffmpeg (falls back to source clip) |
 | Payments            | `src/lib/stripe.ts`          | dev upgrade | Stripe Checkout + webhook          |
 
 Each is selected by an env var (`AI_PROVIDER`, `STORAGE_DRIVER`, `JOB_DRIVER`).
@@ -105,11 +106,22 @@ mapping all live in `src/lib/plans.ts`.
   workspace before streaming bytes.
 - Passwords are bcrypt-hashed; secrets come only from env.
 
+## Export rendering
+
+`createExport` / `bulkExportProject` insert `Export` rows as `QUEUED` and enqueue
+a render job. The renderer (`src/lib/render.ts`) downloads the source, runs
+ffmpeg to trim → reframe (fill + center-crop to the target aspect ratio) → burn
+in captions (generated as an ASS subtitle file from the clip's caption rows),
+adds a watermark on free plans, then stores the output and flips the export to
+`DONE`. The project page polls `/api/projects/[id]/exports` and surfaces a
+download link per format. ffmpeg missing or failing → the export falls back to
+the source clip so it's still downloadable.
+
 ## Scaling path (in order)
 
 1. Move storage to S3/R2 (`STORAGE_DRIVER=s3`).
-2. Move jobs to Redis/BullMQ workers (`JOB_DRIVER=redis`) + real ffmpeg render
-   for exports (burn captions, reframe to 9:16).
+2. Move jobs to Redis/BullMQ workers (`JOB_DRIVER=redis` + `npm run worker`) —
+   AI processing and ffmpeg export rendering both run off the request path.
 3. Flip to the real AI provider (`AI_PROVIDER=claude`) — Claude for clip
    selection and copy, Whisper for transcription. Implemented in `src/lib/ai/`
    (`claude-provider.ts`, `transcription.ts`), with heuristic fallbacks.

@@ -10,6 +10,7 @@ import { Uploader } from "@/components/project/uploader";
 import { ProcessingStatus } from "@/components/project/processing-status";
 import { ClipCard } from "@/components/project/clip-card";
 import { BulkExportBar } from "@/components/project/bulk-export-bar";
+import { ExportsRefresher } from "@/components/project/exports-refresher";
 import { reprocessProject } from "@/server/actions";
 
 export default async function ProjectPage({
@@ -110,6 +111,7 @@ export default async function ProjectPage({
 
       {project.status === "READY" && (
         <div className="mt-8">
+          <ExportsRefresher projectId={project.id} />
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-white">
               {project.clips.length} clips ready
@@ -157,6 +159,11 @@ export default async function ProjectPage({
                   exports: clip.exports.map((e) => ({
                     id: e.id,
                     format: e.format,
+                    status: e.status,
+                    downloadUrl:
+                      e.status === "DONE" && e.storageKey
+                        ? storage.url(e.storageKey)
+                        : null,
                   })),
                 }}
                 captionStyle={template.defaults.captionStyle}

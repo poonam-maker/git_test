@@ -4,29 +4,12 @@ import { getTemplate } from "./templates";
 import { logEvent } from "./analytics";
 import type { TranscriptSegment } from "./ai/types";
 
-// Background processing pipeline.
-//
-// Driver model:
-//   - "inline"  : run the pipeline in-process (dev / small scale). We fire it
-//                 without awaiting so the HTTP request returns immediately and
-//                 the UI can poll job status.
-//   - "redis"   : stub — enqueue to BullMQ and let a separate worker run
-//                 `runProjectPipeline`. Same function body, different trigger.
+// AI processing pipeline. This is the function the job queue runs (inline or via
+// the BullMQ worker — see src/lib/queue.ts). It transcribes, detects silence,
+// suggests clips, and generates captions + social copy.
 //
 // The pipeline is intentionally idempotent-ish: it clears prior AI outputs for
 // the project before regenerating, so "re-process" works.
-
-export async function enqueueProjectProcessing(projectId: string): Promise<void> {
-  const driver = (process.env.JOB_DRIVER || "inline").toLowerCase();
-  if (driver === "redis") {
-    // TODO: enqueue to BullMQ here. For now, fall through to inline.
-    console.warn("[jobs] JOB_DRIVER=redis not wired; running inline.");
-  }
-  // Do not await — let it run in the background.
-  void runProjectPipeline(projectId).catch((err) => {
-    console.error("[jobs] pipeline failed", projectId, err);
-  });
-}
 
 const STEPS = [
   "TRANSCRIBE",
