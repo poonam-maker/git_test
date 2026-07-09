@@ -1,0 +1,315 @@
+// ReelForge data model
+// AI repurposing & publishing for creators and small businesses.
+//
+// Design notes:
+// - Everything is scoped to a Workspace (a team). Even a solo creator gets a
+//   personal workspace on signup. This unlocks Small Business / Agency tiers
+//   (multiple members, shared brand kits) without a future migration.
+// - Billing lives on the Workspace, not the User — you sell seats/plans to teams.
+// - AI outputs (clips, captions, social copy) are first-class rows so they are
+//   editable and re-exportable, which is the core sellable workflow.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ───────────────────────── Auth (NextAuth) ─────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  passwordHash  String? // null when the user only uses magic-link auth
+  createdAt     DateTime  @default(now())
+
+  accounts    Account[]
+  sessions    Session[]
+  memberships Membership[]
+  onboarded   Boolean      @default(false)
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ───────────────────────── Workspaces & billing ─────────────────────────
+
+enum PlanTier {
+  FREE
+  SOLO
+  CREATOR_PRO
+  SMALL_BUSINESS
+  AGENCY
+}
+
+enum MemberRole {
+  OWNER
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+model Workspace {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+
+  // Billing (Stripe)
+  planTier             PlanTier  @default(FREE)
+  stripeCustomerId     String?   @unique
+  stripeSubscriptionId String?   @unique
+  planRenewsAt         DateTime?
+
+  // Usage counters (reset monthly by a job) — power plan limits + analytics.
+  exportsThisMonth  Int      @default(0)
+  usageResetAt      DateTime @default(now())
+
+  memberships     Membership[]
+  projects        Project[]
+  brandKits       BrandKit[]
+  analyticsEvents AnalyticsEvent[]
+}
+
+model Membership {
+  id          String     @id @default(cuid())
+  role        MemberRole @default(OWNER)
+  userId      String
+  workspaceId String
+  createdAt   DateTime   @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, workspaceId])
+  @@index([workspaceId])
+}
+
+// ───────────────────────── Projects & media ─────────────────────────
+
+enum ProjectStatus {
+  DRAFT // created, awaiting upload
+  UPLOADING
+  QUEUED // video uploaded, waiting for AI processing
+  PROCESSING
+  READY // AI outputs generated
+  FAILED
+}
+
+model Project {
+  id          String        @id @default(cuid())
+  title       String
+  status      ProjectStatus @default(DRAFT)
+  workspaceId String
+  createdById String
+  templateKey String? // which creator/business template drives defaults
+  brandKitId  String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  brandKit  BrandKit? @relation(fields: [brandKitId], references: [id])
+  video     Video?
+  clips     Clip[]
+  jobs      ProcessingJob[]
+
+  @@index([workspaceId])
+}
+
+model Video {
+  id            String   @id @default(cuid())
+  projectId     String   @unique
+  storageKey    String // key/path in the storage driver
+  originalName  String
+  mimeType      String
+  sizeBytes     Int
+  durationSec   Float? // filled after probe/processing
+  transcript    Json? // [{ start, end, text }]
+  createdAt     DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+enum JobType {
+  TRANSCRIBE
+  SILENCE_REMOVAL
+  CLIP_DETECTION
+  CAPTION_GENERATION
+  COPY_GENERATION
+  EXPORT
+}
+
+enum JobStatus {
+  QUEUED
+  RUNNING
+  DONE
+  FAILED
+}
+
+model ProcessingJob {
+  id        String    @id @default(cuid())
+  projectId String
+  type      JobType
+  status    JobStatus @default(QUEUED)
+  progress  Int       @default(0) // 0..100
+  error     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([status])
+}
+
+// ───────────────────────── AI outputs ─────────────────────────
+
+enum ExportFormat {
+  TIKTOK // 1080x1920
+  REELS // 1080x1920
+  SHORTS // 1080x1920
+  VERTICAL // 1080x1920 generic
+  SQUARE // 1080x1080
+}
+
+model Clip {
+  id          String   @id @default(cuid())
+  projectId   String
+  title       String
+  startSec    Float
+  endSec      Float
+  score       Float    @default(0) // AI "virality"/relevance hint, 0..1
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  project    Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  captions   Caption[]
+  socialPost SocialPost?
+  exports    Export[]
+
+  @@index([projectId])
+}
+
+model Caption {
+  id        String   @id @default(cuid())
+  clipId    String
+  startSec  Float
+  endSec    Float
+  text      String
+  order     Int      @default(0)
+
+  clip Clip @relation(fields: [clipId], references: [id], onDelete: Cascade)
+
+  @@index([clipId])
+}
+
+model SocialPost {
+  id          String   @id @default(cuid())
+  clipId      String   @unique
+  title       String
+  hook        String
+  description String
+  hashtags    String[] // e.g. ["#marketing", "#smallbiz"]
+  cta         String
+  edited      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  clip Clip @relation(fields: [clipId], references: [id], onDelete: Cascade)
+}
+
+model Export {
+  id            String       @id @default(cuid())
+  clipId        String
+  format        ExportFormat
+  captionStyle  String       @default("bold-bottom")
+  storageKey    String? // rendered file key once export job completes
+  status        JobStatus    @default(QUEUED)
+  createdAt     DateTime     @default(now())
+
+  clip Clip @relation(fields: [clipId], references: [id], onDelete: Cascade)
+
+  @@index([clipId])
+}
+
+// ───────────────────────── Brand kit ─────────────────────────
+
+model BrandKit {
+  id           String   @id @default(cuid())
+  workspaceId  String
+  name         String
+  logoKey      String? // storage key of uploaded logo
+  primaryColor String   @default("#4f46e5")
+  accentColor  String   @default("#f97316")
+  fontFamily   String   @default("Inter")
+  toneOfVoice  String   @default("friendly") // friendly | professional | bold | educational
+  ctaTemplates String[] // reusable CTAs, e.g. ["Follow for more", "Book a call"]
+  isDefault    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  projects  Project[]
+
+  @@index([workspaceId])
+}
+
+// ───────────────────────── Analytics ─────────────────────────
+
+enum AnalyticsEventType {
+  PROJECT_CREATED
+  VIDEO_UPLOADED
+  PROCESSING_COMPLETED
+  CLIP_CREATED
+  EXPORT_CREATED
+  TEMPLATE_USED
+}
+
+model AnalyticsEvent {
+  id          String             @id @default(cuid())
+  workspaceId String
+  type        AnalyticsEventType
+  metadata    Json? // e.g. { templateKey, format }
+  createdAt   DateTime           @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, type])
+  @@index([workspaceId, createdAt])
+}
