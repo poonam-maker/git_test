@@ -29,7 +29,7 @@ businesses can post more without filming more.
 | Auth               | NextAuth (email/password **and** magic link)        |
 | File storage       | Pluggable driver — `local` (dev) or `s3`/R2 (prod) |
 | Background jobs     | Pluggable driver — `inline` (dev) or Redis/BullMQ  |
-| AI                 | Pluggable provider — `mock` (offline) or `openai`  |
+| AI                 | Pluggable provider — `mock` (offline) or `claude`  |
 | Payments           | Stripe subscriptions (with dev fallback)           |
 
 Everything external (AI, storage, jobs, payments) is behind a small interface so
@@ -76,8 +76,11 @@ docker run --name reelforge-db -e POSTGRES_USER=reelforge \
 6. **Export** per platform, or **bulk export** every clip at once (Pro feature).
 
 The mock AI produces deterministic, plausible output so this all works offline.
-Swap `AI_PROVIDER=openai` (and implement the provider) for real transcription
-and copy.
+Set `AI_PROVIDER=claude` (with `ANTHROPIC_API_KEY`, and `OPENAI_API_KEY` for
+Whisper transcription) to get real AI: Whisper transcribes the audio, and Claude
+selects clip boundaries and writes brand-aware titles, hooks, hashtags, and
+CTAs. Every model-backed step falls back to the offline heuristics if a key is
+missing or a call fails, so processing never hard-fails.
 
 ## Environment variables
 
@@ -132,7 +135,8 @@ container). For production:
 - Set `STORAGE_DRIVER=s3` and implement the S3 client in `src/lib/storage.ts`.
 - Set `JOB_DRIVER=redis` and run a worker calling `runProjectPipeline`.
 - Add Stripe keys + a webhook to `/api/stripe/webhook`.
-- Implement `AI_PROVIDER=openai` (Whisper + an LLM) in `src/lib/ai/`.
+- Set `AI_PROVIDER=claude` with `ANTHROPIC_API_KEY` + `OPENAI_API_KEY`
+  (Claude for clips/copy, Whisper for transcription — see `src/lib/ai/`).
 
 See [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) for the full technical plan
 and [`docs/PRODUCT.md`](./docs/PRODUCT.md) for the product spec.

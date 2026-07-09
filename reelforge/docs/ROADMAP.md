@@ -5,7 +5,8 @@ priority order (revenue and stickiness first):
 
 ## Next up (make it real)
 
-- [ ] **Real AI provider** — Whisper transcription + LLM copy (`AI_PROVIDER=openai`).
+- [x] **Real AI provider** — Claude for clip selection + brand-aware copy, Whisper
+      for transcription (`AI_PROVIDER=claude`), with heuristic fallbacks.
 - [ ] **Real export render** — ffmpeg worker: cut clip, reframe to 9:16, burn
       captions in the selected style, apply brand kit.
 - [ ] **S3/R2 storage** — implement `S3StorageDriver`, presigned direct uploads

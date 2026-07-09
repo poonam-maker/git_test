@@ -69,6 +69,7 @@ export async function runProjectPipeline(projectId: string): Promise<void> {
     const transcript = await ai.transcribe({
       storageKey: project.video.storageKey,
       durationSec,
+      sizeBytes: project.video.sizeBytes,
     });
     await prisma.video.update({
       where: { id: project.video.id },

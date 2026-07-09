@@ -49,6 +49,7 @@ export interface AIProvider {
   transcribe(input: {
     storageKey: string;
     durationSec: number;
+    sizeBytes?: number;
   }): Promise<TranscriptSegment[]>;
   detectSilence(transcript: TranscriptSegment[]): Promise<SilenceGap[]>;
   suggestClips(input: {

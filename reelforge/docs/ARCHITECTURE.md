@@ -73,7 +73,7 @@ Design decisions:
 
 | Interface           | File                         | Dev default | Production                         |
 | ------------------- | ---------------------------- | ----------- | ---------------------------------- |
-| `AIProvider`        | `src/lib/ai/`                | `mock`      | OpenAI/Whisper, Deepgram, etc.     |
+| `AIProvider`        | `src/lib/ai/`                | `mock`      | `claude` (Claude + Whisper)        |
 | `StorageDriver`     | `src/lib/storage.ts`         | `local`     | S3 / R2 / MinIO                    |
 | Job driver          | `src/lib/jobs.ts`            | `inline`    | Redis + BullMQ worker              |
 | Payments            | `src/lib/stripe.ts`          | dev upgrade | Stripe Checkout + webhook          |
@@ -110,6 +110,8 @@ mapping all live in `src/lib/plans.ts`.
 1. Move storage to S3/R2 (`STORAGE_DRIVER=s3`).
 2. Move jobs to Redis/BullMQ workers (`JOB_DRIVER=redis`) + real ffmpeg render
    for exports (burn captions, reframe to 9:16).
-3. Implement the OpenAI/Whisper provider (`AI_PROVIDER=openai`).
+3. Flip to the real AI provider (`AI_PROVIDER=claude`) — Claude for clip
+   selection and copy, Whisper for transcription. Implemented in `src/lib/ai/`
+   (`claude-provider.ts`, `transcription.ts`), with heuristic fallbacks.
 4. Add Stripe usage-based add-ons and annual plans (toggle already in the UI).
 5. Add scheduling/publishing integrations (the "publishing" half of the vision).
