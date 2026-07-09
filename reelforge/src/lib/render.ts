@@ -1,4 +1,3 @@
-import { spawn } from "child_process";
 import { promises as fs } from "fs";
 import os from "os";
 import path from "path";
@@ -7,6 +6,7 @@ import { prisma } from "./prisma";
 import { getStorage } from "./storage";
 import { getPlan } from "./plans";
 import { getTemplate, CAPTION_STYLES } from "./templates";
+import { runFfmpeg } from "./ffmpeg";
 import type { ExportFormat } from "@prisma/client";
 
 // Export renderer. Turns a Clip + its captions into a real, publish-ready video
@@ -16,8 +16,6 @@ import type { ExportFormat } from "@prisma/client";
 // If ffmpeg isn't available (or rendering fails), it falls back to pointing the
 // export at the source video and marks it DONE — the product keeps working,
 // just without the reframe/burn-in. Set FFMPEG_PATH to a custom binary.
-
-const FFMPEG = process.env.FFMPEG_PATH || "ffmpeg";
 
 // Target output dimensions per platform.
 const DIMENSIONS: Record<ExportFormat, { w: number; h: number }> = {
@@ -154,22 +152,6 @@ async function renderWithFfmpeg(input: RenderInput): Promise<string> {
   } finally {
     await fs.rm(tmpDir, { recursive: true, force: true }).catch(() => {});
   }
-}
-
-function runFfmpeg(args: string[]): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const proc = spawn(FFMPEG, args, { stdio: ["ignore", "ignore", "pipe"] });
-    let stderr = "";
-    proc.stderr?.on("data", (d) => {
-      stderr += d.toString();
-      if (stderr.length > 8000) stderr = stderr.slice(-8000);
-    });
-    proc.on("error", reject); // e.g. ENOENT when ffmpeg isn't installed
-    proc.on("close", (code) => {
-      if (code === 0) resolve();
-      else reject(new Error(`ffmpeg exited ${code}: ${stderr.slice(-500)}`));
-    });
-  });
 }
 
 // ── ASS subtitle generation ─────────────────────────────────────────

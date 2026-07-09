@@ -11,10 +11,13 @@ priority order (revenue and stickiness first):
       styled captions, watermark free plans (`src/lib/render.ts`).
 - [x] **Redis/BullMQ jobs** — durable queue + separate worker (`npm run worker`),
       retries with backoff (`src/lib/queue.ts`, `src/worker.ts`).
-- [ ] **S3/R2 storage** — implement `S3StorageDriver`, presigned direct uploads
-      for large files.
-- [ ] **Audio extraction for long uploads** — pre-extract audio so Whisper's
-      25MB cap doesn't block full-length videos.
+- [x] **S3/R2 storage** — `S3StorageDriver` for AWS S3 / Cloudflare R2 / MinIO
+      (`STORAGE_DRIVER=s3`), lazy-loaded, access still gated via `/api/files`.
+- [x] **Audio extraction for long uploads** — ffmpeg pre-extracts mono 16kHz
+      audio before Whisper, lifting the 25MB cap to ~50 min of video.
+- [ ] **Presigned direct upload/download** — browser ↔ S3 directly (presigned
+      PUT/GET) so large files skip the app server.
+- [ ] **Audio chunking** — split >50 min audio into windows for Whisper.
 
 ## Sellable growth features
 

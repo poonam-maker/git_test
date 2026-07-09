@@ -55,22 +55,82 @@ class LocalStorageDriver implements StorageDriver {
   }
 }
 
+// S3-compatible driver. Works with AWS S3, Cloudflare R2, and MinIO — set
+// S3_ENDPOINT for the latter two (which also need path-style addressing).
+// The AWS SDK is imported lazily so it never loads in local-driver mode.
+//
+// url() returns the gated /api/files path (streamed via get + auth check) so
+// private videos/exports stay private. For heavy traffic you'd swap this for a
+// short-lived presigned GET (@aws-sdk/s3-request-presigner) — noted below.
 class S3StorageDriver implements StorageDriver {
   readonly name = "s3";
-  // NOTE: install `@aws-sdk/client-s3` and implement these for production.
-  // Kept as a clearly-marked stub so `STORAGE_DRIVER=s3` fails loud, not silent.
-  async put(): Promise<void> {
-    throw new Error("S3 driver not implemented — install @aws-sdk/client-s3 and wire it here.");
+  private bucket: string;
+  private clientPromise: Promise<import("@aws-sdk/client-s3").S3Client> | null = null;
+
+  constructor() {
+    this.bucket = process.env.S3_BUCKET || "";
+    if (!this.bucket) {
+      throw new Error("STORAGE_DRIVER=s3 requires S3_BUCKET to be set.");
+    }
   }
-  async get(): Promise<Buffer> {
-    throw new Error("S3 driver not implemented.");
+
+  private client(): Promise<import("@aws-sdk/client-s3").S3Client> {
+    if (!this.clientPromise) {
+      this.clientPromise = (async () => {
+        const { S3Client } = await import("@aws-sdk/client-s3");
+        const endpoint = process.env.S3_ENDPOINT || undefined;
+        const creds =
+          process.env.S3_ACCESS_KEY_ID && process.env.S3_SECRET_ACCESS_KEY
+            ? {
+                accessKeyId: process.env.S3_ACCESS_KEY_ID,
+                secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+              }
+            : undefined; // fall back to the default AWS credential chain (IAM role)
+        return new S3Client({
+          region: process.env.S3_REGION || "us-east-1",
+          endpoint,
+          forcePathStyle: Boolean(endpoint), // required for MinIO / some R2 setups
+          credentials: creds,
+        });
+      })();
+    }
+    return this.clientPromise;
   }
-  async delete(): Promise<void> {
-    throw new Error("S3 driver not implemented.");
+
+  async put(key: string, data: Buffer, contentType: string): Promise<void> {
+    const { PutObjectCommand } = await import("@aws-sdk/client-s3");
+    const client = await this.client();
+    await client.send(
+      new PutObjectCommand({
+        Bucket: this.bucket,
+        Key: key,
+        Body: data,
+        ContentType: contentType,
+      })
+    );
   }
+
+  async get(key: string): Promise<Buffer> {
+    const { GetObjectCommand } = await import("@aws-sdk/client-s3");
+    const client = await this.client();
+    const res = await client.send(
+      new GetObjectCommand({ Bucket: this.bucket, Key: key })
+    );
+    if (!res.Body) throw new Error(`S3 object has no body: ${key}`);
+    const bytes = await res.Body.transformToByteArray();
+    return Buffer.from(bytes);
+  }
+
+  async delete(key: string): Promise<void> {
+    const { DeleteObjectCommand } = await import("@aws-sdk/client-s3");
+    const client = await this.client();
+    await client.send(
+      new DeleteObjectCommand({ Bucket: this.bucket, Key: key })
+    );
+  }
+
   url(key: string): string {
-    const endpoint = process.env.S3_ENDPOINT || `https://${process.env.S3_BUCKET}.s3.${process.env.S3_REGION}.amazonaws.com`;
-    return `${endpoint}/${key}`;
+    return `/api/files/${encodeURI(key)}`;
   }
 }
 

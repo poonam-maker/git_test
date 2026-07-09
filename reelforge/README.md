@@ -136,7 +136,8 @@ Deploy the Next.js app anywhere that runs Node (Vercel, Fly, Railway, a
 container). For production:
 
 - Point `DATABASE_URL` at managed Postgres (Neon, Supabase, RDS).
-- Set `STORAGE_DRIVER=s3` and implement the S3 client in `src/lib/storage.ts`.
+- Set `STORAGE_DRIVER=s3` with `S3_BUCKET` + credentials (works with AWS S3,
+  Cloudflare R2, or MinIO — set `S3_ENDPOINT` for the latter two).
 - Set `JOB_DRIVER=redis` + `REDIS_URL` and run `npm run worker` (BullMQ) — one
   or more worker processes handle AI processing and export rendering off the
   request path.
