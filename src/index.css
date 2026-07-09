@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Default accent (Builder / amber). Overridden per-identity at runtime. */
+  --accent: 245 158 11;
+  --accent-soft: 251 191 36;
+  --accent-glow: 245 158 11;
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-ink-950 text-slate-100 font-sans antialiased;
+    background-image:
+      radial-gradient(70% 55% at 15% -5%, rgb(var(--accent-soft) / 0.12) 0%, transparent 60%),
+      radial-gradient(60% 50% at 100% 0%, rgb(var(--accent) / 0.1) 0%, transparent 55%);
+    background-attachment: fixed;
+    overscroll-behavior-y: none;
+  }
+  /* Respect users who prefer reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+  ::selection {
+    background: rgb(var(--accent) / 0.35);
+  }
+  /* Slim scrollbars */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(var(--accent) / 0.35);
+    border-radius: 99px;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-3xl border border-white/10 bg-ink-850/80 backdrop-blur-xl shadow-card;
+  }
+  .card-hover {
+    @apply transition-all duration-300 hover:border-white/20 hover:-translate-y-0.5;
+  }
+  .pill {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold
+           transition-all duration-200 active:scale-[0.97] disabled:opacity-50 disabled:pointer-events-none
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2 focus-visible:ring-offset-ink-950;
+  }
+  .btn-primary {
+    @apply btn bg-accent-gradient text-ink-950 shadow-glow;
+  }
+  .btn-ghost {
+    @apply btn bg-white/5 text-slate-200 hover:bg-white/10 border border-white/10;
+  }
+  .input {
+    @apply w-full rounded-2xl border border-white/10 bg-ink-800/70 px-4 py-3 text-sm text-slate-100
+           placeholder:text-slate-500 focus:border-accent/60 focus:outline-none focus:ring-2 focus:ring-accent/30 transition;
+  }
+  .label {
+    @apply block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2;
+  }
+  .gradient-text {
+    @apply bg-gradient-to-r from-accent-soft to-accent bg-clip-text text-transparent;
+  }
+  /* progress bar shimmer */
+  .shimmer::after {
+    content: '';
+    @apply absolute inset-0 -translate-x-full animate-shimmer;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  }
+}
+
+/* Safe-area padding for notched phones */
+.pb-safe {
+  padding-bottom: calc(env(safe-area-inset-bottom) + 5.5rem);
+}
+.pt-safe {
+  padding-top: env(safe-area-inset-top);
+}
