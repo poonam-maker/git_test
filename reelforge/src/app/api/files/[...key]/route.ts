@@ -34,7 +34,7 @@ export async function GET(
     const storage = getStorage();
     const buffer = await storage.get(key);
     const contentType = video?.mimeType || "application/octet-stream";
-    return new NextResponse(buffer, {
+    return new NextResponse(new Uint8Array(buffer), {
       headers: {
         "Content-Type": contentType,
         "Cache-Control": "private, max-age=3600",

@@ -11,7 +11,11 @@ let cached: Stripe | null = null;
 export function getStripe(): Stripe | null {
   const key = process.env.STRIPE_SECRET_KEY;
   if (!key) return null;
-  if (!cached) cached = new Stripe(key, { apiVersion: "2024-10-28.acacia" });
+  // Pin to the SDK's expected version; cast keeps us resilient across bumps.
+  if (!cached)
+    cached = new Stripe(key, {
+      apiVersion: "2025-02-24.acacia" as Stripe.LatestApiVersion,
+    });
   return cached;
 }
 

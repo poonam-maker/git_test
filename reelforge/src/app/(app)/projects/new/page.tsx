@@ -5,7 +5,12 @@ import { TemplatePicker } from "@/components/template-picker";
 // Server component form. The template picker is a small client island so the
 // selected radio is visually highlighted; submission uses the server action.
 
-export default function NewProjectPage() {
+export default function NewProjectPage({
+  searchParams,
+}: {
+  searchParams: { template?: string };
+}) {
+  const defaultKey = searchParams.template ?? "talking-head";
   return (
     <div className="mx-auto max-w-2xl animate-fade-in">
       <h1 className="text-2xl font-bold text-white">New project</h1>
@@ -27,7 +32,7 @@ export default function NewProjectPage() {
 
         <div>
           <span className="label">Choose a template</span>
-          <TemplatePicker templates={TEMPLATE_LIST} />
+          <TemplatePicker templates={TEMPLATE_LIST} defaultKey={defaultKey} />
         </div>
 
         <button type="submit" className="btn-primary w-full py-3">
