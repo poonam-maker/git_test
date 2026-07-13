@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { createJSONStorage, persist } from 'zustand/middleware'
 import type {
   Achievement, AppNotification, BossBattle, IdentityId, LifeAreaId,
   Priority, Profile, ProgressLog, Quest, ShareCard, ShareCardType,
@@ -159,6 +159,22 @@ function checkBadges(state: State, partial: Partial<State>): Partial<State> {
 }
 
 const initialStreak: Streak = { current: 0, longest: 0, lastCheckIn: null, freezeTokens: 1 }
+
+// Resilient storage: use localStorage when available, otherwise fall back to an
+// in-memory map. Keeps the app from crashing in private mode, SSR, or sandboxed
+// iframes where accessing localStorage throws.
+const memoryStore = new Map<string, string>()
+const safeStorage = {
+  getItem: (name: string): string | null => {
+    try { return globalThis.localStorage.getItem(name) } catch { return memoryStore.get(name) ?? null }
+  },
+  setItem: (name: string, value: string): void => {
+    try { globalThis.localStorage.setItem(name, value) } catch { memoryStore.set(name, value) }
+  },
+  removeItem: (name: string): void => {
+    try { globalThis.localStorage.removeItem(name) } catch { memoryStore.delete(name) }
+  },
+}
 
 export const useStore = create<State>()(
   persist(
@@ -451,6 +467,7 @@ export const useStore = create<State>()(
     }),
     {
       name: 'lifearc-v1',
+      storage: createJSONStorage(() => safeStorage),
       partialize: (s) => {
         const { toasts: _t, levelUpTo: _l, ...rest } = s
         return rest as State
