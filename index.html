@@ -3,455 +3,240 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LeadPilot | Never Miss a Lead Again — AI Lead Capture for Local Business</title>
-  <meta name="description" content="LeadPilot instantly texts back missed calls, unifies every lead into one inbox, and answers with an AI receptionist 24/7. The all-in-one lead capture platform for local service businesses." />
+  <title>LeadPilot · Lead Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Righteous&family=Nunito:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@1,400;1,500;1,600&display=swap" rel="stylesheet" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="app.css" />
 </head>
-<body>
+<body class="app-body">
 
-
-  <!-- ══════════════════════════════════════════════
-       NAV (fixed over hero)
-  ══════════════════════════════════════════════ -->
-  <nav id="topnav">
-    <div class="nav-logo2">
-      <svg width="26" height="26" viewBox="0 0 256 256" aria-hidden="true">
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="app-sidebar" id="app-sidebar">
+    <a href="index.html" class="app-logo">
+      <svg width="24" height="24" viewBox="0 0 256 256" aria-hidden="true">
         <circle cx="128" cy="128" r="30" fill="#E8A020"/>
         <circle cx="128" cy="128" r="66" fill="none" stroke="#ffffff" stroke-width="14" opacity="0.85"/>
         <circle cx="128" cy="128" r="104" fill="none" stroke="#ffffff" stroke-width="12" opacity="0.4"/>
       </svg>
-      <span class="wm">Lead<em>Pilot</em></span>
+      <span>Lead<em>Pilot</em></span>
+    </a>
+
+    <nav class="app-nav">
+      <button class="app-nav-item active" data-view="dashboard">
+        <span class="ani-ico">▤</span> Dashboard
+      </button>
+      <button class="app-nav-item" data-view="inbox">
+        <span class="ani-ico">✉</span> Inbox <span class="nav-count" id="count-inbox">0</span>
+      </button>
+      <button class="app-nav-item" data-view="missed">
+        <span class="ani-ico">☎</span> Missed Calls <span class="nav-count alert" id="count-missed">0</span>
+      </button>
+      <button class="app-nav-item" data-view="ai">
+        <span class="ani-ico">✦</span> AI Receptionist
+      </button>
+      <button class="app-nav-item" data-view="contacts">
+        <span class="ani-ico">☰</span> Contacts
+      </button>
+      <button class="app-nav-item" data-view="settings">
+        <span class="ani-ico">⚙</span> Settings
+      </button>
+    </nav>
+
+    <div class="app-sidebar-foot">
+      <div class="plan-chip">
+        <span class="plan-chip-label">Plan</span>
+        <span class="plan-chip-name" id="plan-name">Growth</span>
+      </div>
+      <div class="app-user">
+        <div class="app-avatar" id="app-avatar">SH</div>
+        <div class="app-user-meta">
+          <strong id="app-biz-name">Summit HVAC</strong>
+          <span>Demo account</span>
+        </div>
+      </div>
     </div>
+  </aside>
 
-    <div class="nav-pill">
-      <a href="#features">Features</a>
-      <a href="#preview">Product</a>
-      <a href="#how-it-works">How It Works</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#industries">Industries</a>
+  <!-- ══ MAIN ══ -->
+  <div class="app-main">
+
+    <!-- TOPBAR -->
+    <header class="app-topbar">
+      <button class="app-menu-btn" id="app-menu-btn" aria-label="Menu">☰</button>
+      <div class="app-title">
+        <h1 id="view-title">Dashboard</h1>
+        <span class="live-dot" title="Live"></span><span class="live-text">Live</span>
+      </div>
+      <div class="app-topbar-actions">
+        <button class="btn-simulate" id="btn-simulate">
+          <span class="sim-bolt">⚡</span> Simulate incoming lead
+        </button>
+        <button class="app-bell" id="app-bell" aria-label="Notifications">
+          🔔<span class="bell-badge" id="bell-badge" style="display:none">0</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- VIEWS -->
+    <div class="app-views" id="app-views">
+
+      <!-- DASHBOARD -->
+      <section class="app-view active" data-view="dashboard">
+        <div class="kpi-row" id="kpi-row"><!-- rendered --></div>
+
+        <div class="dash-grid">
+          <div class="dash-panel">
+            <div class="panel-head">
+              <h3>Live activity</h3>
+              <span class="panel-sub">Every lead the moment it lands</span>
+            </div>
+            <div class="activity-feed" id="activity-feed"><!-- rendered --></div>
+          </div>
+
+          <div class="dash-side">
+            <div class="dash-panel">
+              <div class="panel-head"><h3>Where leads come from</h3></div>
+              <div class="source-bars" id="source-bars"><!-- rendered --></div>
+            </div>
+            <div class="dash-panel recovered-panel">
+              <span class="recovered-label">Revenue recovered this month</span>
+              <span class="recovered-num" id="recovered-num">$0</span>
+              <span class="recovered-note">From calls you'd otherwise have missed</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- INBOX -->
+      <section class="app-view" data-view="inbox">
+        <div class="inbox-layout">
+          <div class="inbox-list" id="inbox-list"><!-- rendered --></div>
+          <div class="inbox-thread" id="inbox-thread">
+            <div class="thread-empty" id="thread-empty">
+              <span class="thread-empty-ico">✉</span>
+              <p>Select a conversation to view the full thread.</p>
+            </div>
+            <div class="thread-body" id="thread-body" style="display:none">
+              <div class="thread-head" id="thread-head"></div>
+              <div class="thread-messages" id="thread-messages"></div>
+              <form class="thread-reply" id="thread-reply" onsubmit="return sendReply(event)">
+                <input type="text" id="reply-input" placeholder="Type a reply…" autocomplete="off" />
+                <button type="submit">Send</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MISSED CALLS -->
+      <section class="app-view" data-view="missed">
+        <div class="missed-intro">
+          <p>Every call you don't pick up gets an instant text back — before the caller can dial a competitor. Here's what LeadPilot recovered for you.</p>
+        </div>
+        <div class="missed-list" id="missed-list"><!-- rendered --></div>
+      </section>
+
+      <!-- AI RECEPTIONIST -->
+      <section class="app-view" data-view="ai">
+        <div class="ai-header">
+          <div class="ai-status-card">
+            <div class="ai-status-left">
+              <span class="ai-orb"></span>
+              <div>
+                <strong>AI Receptionist</strong>
+                <span id="ai-status-text">Active · answering calls & web chat 24/7</span>
+              </div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="ai-toggle" checked>
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </label>
+          </div>
+          <div class="ai-stats">
+            <div class="ai-stat"><span id="ai-answered">0</span><small>Conversations handled</small></div>
+            <div class="ai-stat"><span id="ai-booked">0</span><small>Appointments booked</small></div>
+            <div class="ai-stat"><span id="ai-afterhours">0</span><small>After-hours saves</small></div>
+          </div>
+        </div>
+        <div class="panel-head"><h3>Recent AI conversations</h3></div>
+        <div class="ai-convos" id="ai-convos"><!-- rendered --></div>
+      </section>
+
+      <!-- CONTACTS -->
+      <section class="app-view" data-view="contacts">
+        <div class="contacts-toolbar">
+          <input type="text" id="contact-search" placeholder="Search leads by name, phone, or channel…" />
+          <span class="contacts-count" id="contacts-count">0 leads</span>
+        </div>
+        <div class="contacts-table-wrap">
+          <table class="contacts-table">
+            <thead>
+              <tr><th>Name</th><th>Channel</th><th>Status</th><th>Value</th><th>Last activity</th></tr>
+            </thead>
+            <tbody id="contacts-body"><!-- rendered --></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section class="app-view" data-view="settings">
+        <div class="settings-grid">
+          <div class="dash-panel">
+            <div class="panel-head"><h3>Business profile</h3></div>
+            <div class="setting-field">
+              <label>Business name</label>
+              <input type="text" id="set-biz" value="Summit HVAC" />
+            </div>
+            <div class="setting-field">
+              <label>Business number</label>
+              <input type="text" id="set-number" value="(555) 018-2245" />
+            </div>
+            <div class="setting-field">
+              <label>Industry</label>
+              <input type="text" id="set-industry" value="HVAC & Heating" />
+            </div>
+          </div>
+
+          <div class="dash-panel">
+            <div class="panel-head"><h3>Missed-call text-back</h3><span class="panel-sub">Sent automatically when a call goes unanswered</span></div>
+            <div class="setting-field">
+              <label>Auto-text message</label>
+              <textarea id="set-autotext" rows="4">Hi! Sorry we missed your call at Summit HVAC. This is our automated assistant — how can we help? Reply here and a team member will jump in right away.</textarea>
+            </div>
+            <div class="setting-field">
+              <label>Send delay</label>
+              <select id="set-delay">
+                <option>Immediately</option>
+                <option selected>After 20 seconds</option>
+                <option>After 45 seconds</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="dash-panel">
+            <div class="panel-head"><h3>Connected channels</h3></div>
+            <div class="channel-toggle" data-channel="Phone"><span><span class="ch-dot call"></span>Phone / SMS</span><label class="toggle sm"><input type="checkbox" checked><span class="toggle-track"><span class="toggle-thumb"></span></span></label></div>
+            <div class="channel-toggle" data-channel="Facebook"><span><span class="ch-dot fb"></span>Facebook & Instagram</span><label class="toggle sm"><input type="checkbox" checked><span class="toggle-track"><span class="toggle-thumb"></span></span></label></div>
+            <div class="channel-toggle" data-channel="Google"><span><span class="ch-dot google"></span>Google Business</span><label class="toggle sm"><input type="checkbox" checked><span class="toggle-track"><span class="toggle-thumb"></span></span></label></div>
+            <div class="channel-toggle" data-channel="Web"><span><span class="ch-dot web"></span>Website chat</span><label class="toggle sm"><input type="checkbox" checked><span class="toggle-track"><span class="toggle-thumb"></span></span></label></div>
+          </div>
+
+          <div class="dash-panel danger-panel">
+            <div class="panel-head"><h3>Demo controls</h3><span class="panel-sub">This is a sandbox — reset anytime</span></div>
+            <button class="btn-reset" id="btn-reset">Reset demo data</button>
+          </div>
+        </div>
+        <button class="settings-save" id="settings-save">Save changes</button>
+      </section>
+
     </div>
+  </div>
 
-    <div class="nav-actions">
-      <a href="app.html" class="nav-login">Log in</a>
-      <a href="login.html?mode=signup" class="nav-signup">Start Free →</a>
-    </div>
-    <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
-  </nav>
+  <!-- TOAST -->
+  <div class="toast-wrap" id="toast-wrap"></div>
 
-  <div id="main-content">
-
-    <!-- ══════════════════════════════════════════════
-         SPOTLIGHT HERO
-    ══════════════════════════════════════════════ -->
-    <section id="spot-hero">
-      <!-- base image (dim, quiet city) -->
-      <div class="base-img hero-zoom"></div>
-
-      <!-- reveal layer (lit-up city) masked by cursor spotlight -->
-      <div class="reveal-wrap">
-        <canvas id="maskCanvas"></canvas>
-        <div class="reveal-img" id="revealImg"></div>
-      </div>
-
-      <!-- copy -->
-      <div class="hero-copy">
-        <div class="hero-head">
-          <div class="hero-pill hero-anim hero-fade" style="animation-delay:0.15s">The all-in-one lead capture platform</div>
-          <h1>
-            <span class="l1 hero-anim hero-reveal" style="animation-delay:0.25s">Never miss</span>
-            <span class="l2 hero-anim hero-reveal" style="animation-delay:0.42s">another lead.</span>
-          </h1>
-        </div>
-
-        <div class="hero-bl hero-anim hero-fade" style="animation-delay:0.7s">
-          <p>Every missed call, form, and DM is a job walking out the door. LeadPilot texts them back in seconds, funnels every lead into one inbox, and lets an AI receptionist answer 24/7.</p>
-        </div>
-
-        <div class="hero-br hero-anim hero-fade" style="animation-delay:0.85s">
-          <p class="hero-hint">Move your cursor across the skyline — watch a city of missed leads light up into booked jobs.</p>
-          <div class="hero-cta-row">
-            <a href="login.html?mode=signup" class="hero-cta">Start Free — 14 Days</a>
-            <a href="app.html" class="hero-cta-ghost">See Live Demo</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TRUST BAR -->
-    <section id="trustbar">
-      <div class="container">
-        <p class="trust-eyebrow">Trusted by 2,300+ local service businesses to capture every lead</p>
-        <div class="trust-metrics">
-          <div class="trust-metric"><span class="tm-num" data-target="391000">0</span><span class="tm-label">Leads recovered</span></div>
-          <div class="trust-metric"><span class="tm-num" data-target="27">0</span><span class="tm-suffix">sec</span><span class="tm-label">Avg. text-back time</span></div>
-          <div class="trust-metric"><span class="tm-num" data-target="42">0</span><span class="tm-suffix">%</span><span class="tm-label">More jobs booked</span></div>
-          <div class="trust-metric"><span class="tm-num" data-target="24">0</span><span class="tm-suffix">/7</span><span class="tm-label">AI never sleeps</span></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- PROBLEM SECTION -->
-    <section id="problem">
-      <div class="container">
-        <div class="section-tag">The Leaky Bucket</div>
-        <h2 class="section-title">You're paying for leads you never even see</h2>
-        <div class="problem-grid">
-          <div class="problem-card" data-anim="fade-up">
-            <p>"They called while I was on a job — by the time I called back, they'd hired someone else."</p>
-          </div>
-          <div class="problem-card" data-anim="fade-up" style="--delay:0.1s">
-            <p>"Leads come in from Facebook, Google, my website, and my phone. I can't keep track of any of it."</p>
-          </div>
-          <div class="problem-card" data-anim="fade-up" style="--delay:0.2s">
-            <p>"After 5pm and weekends the phone just rings out. That's when half my customers call."</p>
-          </div>
-          <div class="problem-card" data-anim="fade-up" style="--delay:0.3s">
-            <p>"I know I'm losing money to missed calls — I just have no idea how much."</p>
-          </div>
-        </div>
-        <div class="problem-cta">
-          <span class="problem-cta-text">LeadPilot plugs every leak.</span>
-          <div class="arrow-down">↓</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- FEATURES -->
-    <section id="features">
-      <div class="container">
-        <div class="section-tag">The Platform</div>
-        <h2 class="section-title">Three ways we make sure no lead slips through</h2>
-        <p class="section-sub">One login. Every channel. Every lead answered — automatically.</p>
-        <div class="services-grid">
-
-          <div class="service-card" data-anim="card-pop">
-            <div class="service-number">01</div>
-            <h3>Missed-Call Text-Back</h3>
-            <p>The instant a call goes unanswered, LeadPilot fires off a friendly text so the customer never has to wait — or call your competitor. Most reply within a minute.</p>
-            <ul class="service-list">
-              <li>✓ Auto-text in under 30 seconds</li>
-              <li>✓ Fully customizable message templates</li>
-              <li>✓ Two-way texting from your dashboard</li>
-              <li>✓ Works with your existing number</li>
-            </ul>
-            <div class="service-glow"></div>
-          </div>
-
-          <div class="service-card featured" data-anim="card-pop" style="--delay:0.1s">
-            <div class="featured-badge">Core</div>
-            <div class="service-number">02</div>
-            <h3>Unified Lead Inbox</h3>
-            <p>Calls, texts, web forms, Facebook & Instagram, Google, and web chat all land in one inbox. Every conversation, every source, every follow-up — in a single place your whole team can see.</p>
-            <ul class="service-list">
-              <li>✓ Every channel in one thread</li>
-              <li>✓ Lead status & follow-up reminders</li>
-              <li>✓ Assign, tag, and note each lead</li>
-              <li>✓ Never lose track of a conversation</li>
-            </ul>
-            <div class="service-glow"></div>
-          </div>
-
-          <div class="service-card" data-anim="card-pop" style="--delay:0.2s">
-            <div class="service-number">03</div>
-            <h3>AI Receptionist</h3>
-            <p>Nights, weekends, or mid-job — an AI trained on your business answers calls and chats, qualifies the lead, quotes basic questions, and books the appointment straight into your calendar.</p>
-            <ul class="service-list">
-              <li>✓ Answers calls & web chat 24/7</li>
-              <li>✓ Qualifies and books appointments</li>
-              <li>✓ Sounds like your business</li>
-              <li>✓ Hands off to you when it matters</li>
-            </ul>
-            <div class="service-glow"></div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
-    <!-- PRODUCT PREVIEW -->
-    <section id="preview">
-      <div class="container">
-        <div class="section-tag">See It Working</div>
-        <h2 class="section-title">Your entire lead pipeline, on one screen</h2>
-        <p class="section-sub">This isn't a mockup — it's the real product. Click into the live demo and simulate an incoming lead yourself.</p>
-
-        <div class="preview-frame" data-anim="fade-up">
-          <div class="preview-chrome">
-            <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
-            <span class="preview-url">app.leadpilot.io/dashboard</span>
-          </div>
-          <div class="preview-body">
-            <div class="preview-sidebar">
-              <div class="pv-logo">Lead<em>Pilot</em></div>
-              <div class="pv-nav active">Dashboard</div>
-              <div class="pv-nav">Inbox <span class="pv-badge">7</span></div>
-              <div class="pv-nav">Missed Calls</div>
-              <div class="pv-nav">AI Receptionist</div>
-              <div class="pv-nav">Contacts</div>
-              <div class="pv-nav">Settings</div>
-            </div>
-            <div class="preview-main">
-              <div class="pv-kpis">
-                <div class="pv-kpi"><span class="pv-kpi-num">18</span><span class="pv-kpi-label">Leads today</span></div>
-                <div class="pv-kpi"><span class="pv-kpi-num">6</span><span class="pv-kpi-label">Calls recovered</span></div>
-                <div class="pv-kpi"><span class="pv-kpi-num">27s</span><span class="pv-kpi-label">Avg response</span></div>
-                <div class="pv-kpi gold"><span class="pv-kpi-num">$4,200</span><span class="pv-kpi-label">Recovered value</span></div>
-              </div>
-              <div class="pv-feed">
-                <div class="pv-feed-item"><span class="pv-tag call">Missed Call</span> Auto-texted <strong>Dana R.</strong> in 24s → replied "yes please!"</div>
-                <div class="pv-feed-item"><span class="pv-tag ai">AI</span> Booked <strong>Marcus L.</strong> for a Thu 2pm estimate</div>
-                <div class="pv-feed-item"><span class="pv-tag fb">Facebook</span> New lead <strong>Priya S.</strong> — roof inspection</div>
-                <div class="pv-feed-item"><span class="pv-tag web">Web Chat</span> AI answered pricing question for <strong>Tom H.</strong></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="preview-cta">
-          <a href="app.html" class="btn-package" style="max-width:340px;margin:0 auto;">Open the Live Demo →</a>
-          <p class="package-note">No signup required to explore the demo.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- HOW IT WORKS -->
-    <section id="how-it-works">
-      <div class="container">
-        <div class="section-tag">Setup in Minutes</div>
-        <h2 class="section-title">Live before your next missed call</h2>
-        <div class="steps-wrap">
-          <div class="steps-line"></div>
-          <div class="step" data-anim="step-in">
-            <div class="step-num">1</div>
-            <div class="step-content">
-              <h3>Connect your number</h3>
-              <p>Forward your business line to LeadPilot in a couple of clicks. Keep the number you already have — customers never know the difference.</p>
-            </div>
-          </div>
-          <div class="step" data-anim="step-in" style="--delay:0.2s">
-            <div class="step-num">2</div>
-            <div class="step-content">
-              <h3>Plug in your channels</h3>
-              <p>Link Facebook, Instagram, Google, and your website forms. Every lead source now flows into one inbox instead of five apps.</p>
-            </div>
-          </div>
-          <div class="step" data-anim="step-in" style="--delay:0.4s">
-            <div class="step-num">3</div>
-            <div class="step-content">
-              <h3>Train your AI in 5 minutes</h3>
-              <p>Answer a few questions about your services, hours, and pricing. Your AI receptionist is ready to greet, qualify, and book — in your voice.</p>
-            </div>
-          </div>
-          <div class="step" data-anim="step-in" style="--delay:0.6s">
-            <div class="step-num">4</div>
-            <div class="step-content">
-              <h3>Watch nothing slip through</h3>
-              <p>Missed calls get texted back, leads get organized, appointments get booked. You just show up and do the work.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- PRICING -->
-    <section id="pricing">
-      <div class="container">
-        <div class="section-tag">Simple Pricing</div>
-        <h2 class="section-title">Costs less than one lost job a month</h2>
-        <p class="section-sub">Every plan includes missed-call text-back, the unified inbox, and unlimited team seats. No setup fees. Cancel anytime.</p>
-
-        <div class="pricing-grid">
-          <div class="price-card" data-anim="card-pop">
-            <h3 class="price-name">Starter</h3>
-            <p class="price-for">For solo operators just getting started.</p>
-            <div class="price-amount"><span class="price-cur">$</span><span class="price-num">49</span><span class="price-per">/mo</span></div>
-            <a href="login.html?mode=signup&plan=starter" class="price-btn">Start Free Trial</a>
-            <ul class="price-list">
-              <li>✓ Missed-call text-back</li>
-              <li>✓ Unified lead inbox</li>
-              <li>✓ Up to 500 leads/mo</li>
-              <li>✓ 1 connected number</li>
-              <li>✓ Email support</li>
-            </ul>
-          </div>
-
-          <div class="price-card featured" data-anim="card-pop" style="--delay:0.1s">
-            <div class="price-badge">Most Popular</div>
-            <h3 class="price-name">Growth</h3>
-            <p class="price-for">For busy shops ready to scale bookings.</p>
-            <div class="price-amount"><span class="price-cur">$</span><span class="price-num">129</span><span class="price-per">/mo</span></div>
-            <a href="login.html?mode=signup&plan=growth" class="price-btn price-btn-gold">Start Free Trial</a>
-            <ul class="price-list">
-              <li>✓ Everything in Starter</li>
-              <li>✓ <strong>AI Receptionist 24/7</strong></li>
-              <li>✓ Facebook, Google & web chat</li>
-              <li>✓ Up to 2,500 leads/mo</li>
-              <li>✓ Appointment booking + reminders</li>
-              <li>✓ Priority support</li>
-            </ul>
-          </div>
-
-          <div class="price-card" data-anim="card-pop" style="--delay:0.2s">
-            <h3 class="price-name">Pro</h3>
-            <p class="price-for">For multi-location teams and agencies.</p>
-            <div class="price-amount"><span class="price-cur">$</span><span class="price-num">299</span><span class="price-per">/mo</span></div>
-            <a href="login.html?mode=signup&plan=pro" class="price-btn">Start Free Trial</a>
-            <ul class="price-list">
-              <li>✓ Everything in Growth</li>
-              <li>✓ Unlimited leads & numbers</li>
-              <li>✓ Multi-location dashboard</li>
-              <li>✓ Advanced reporting & API</li>
-              <li>✓ Dedicated success manager</li>
-              <li>✓ White-label option</li>
-            </ul>
-          </div>
-        </div>
-        <p class="pricing-guarantee">14-day free trial on every plan · No credit card required · Setup in minutes</p>
-      </div>
-    </section>
-
-    <!-- INDUSTRIES -->
-    <section id="industries">
-      <div class="container">
-        <div class="section-tag">Who It's For</div>
-        <h2 class="section-title">Built for local service businesses</h2>
-        <div class="industries-ticker-wrap">
-          <div class="industries-ticker">
-            <span> HVAC</span>
-            <span> Plumbing</span>
-            <span> Electrical</span>
-            <span> Roofing</span>
-            <span> Landscaping</span>
-            <span> Cleaning</span>
-            <span> Locksmith</span>
-            <span> Auto Repair</span>
-            <span> Dental</span>
-            <span> Med Spa</span>
-            <span> General Contractor</span>
-            <span> Pet Services</span>
-            <!-- duplicate for loop -->
-            <span> HVAC</span>
-            <span> Plumbing</span>
-            <span> Electrical</span>
-            <span> Roofing</span>
-            <span> Landscaping</span>
-            <span> Cleaning</span>
-            <span> Locksmith</span>
-            <span> Auto Repair</span>
-            <span> Dental</span>
-            <span> Med Spa</span>
-            <span> General Contractor</span>
-            <span> Pet Services</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- FINAL CTA -->
-    <section id="contact">
-      <div class="container">
-        <div class="section-tag">Get Started</div>
-        <h2 class="section-title">Stop losing jobs to a missed call</h2>
-        <p class="section-sub">Start your 14-day free trial. Be capturing every lead by this afternoon — no credit card, no contracts.</p>
-        <div class="contact-wrap">
-          <form class="contact-form" id="contact-form" onsubmit="handleSubmit(event)">
-            <div class="form-row">
-              <div class="form-group">
-                <input type="text" id="name" required placeholder=" " />
-                <label for="name">Your Name</label>
-              </div>
-              <div class="form-group">
-                <input type="text" id="business" required placeholder=" " />
-                <label for="business">Business Name</label>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <input type="email" id="email" required placeholder=" " />
-                <label for="email">Work Email</label>
-              </div>
-              <div class="form-group">
-                <select id="plan" required>
-                  <option value="">Choose a Plan</option>
-                  <option>Starter — $49/mo</option>
-                  <option>Growth — $129/mo</option>
-                  <option>Pro — $299/mo</option>
-                  <option>Not sure yet</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group full">
-              <textarea id="message" rows="3" placeholder=" "></textarea>
-              <label for="message">What kind of business do you run?</label>
-            </div>
-            <button type="submit" class="btn-submit">
-              <span class="btn-submit-text">Start My Free Trial</span>
-              <span class="btn-submit-loading" style="display:none">Setting up your account...</span>
-            </button>
-            <div class="form-success" id="form-success">
-              You're in! Check your email — we'll have you live in minutes.
-            </div>
-          </form>
-          <div class="contact-info">
-            <div class="contact-card">
-              <h3>What you get on day one</h3>
-              <ul>
-                <li>✓ Missed calls texted back automatically</li>
-                <li>✓ Every lead source in one inbox</li>
-                <li>✓ AI receptionist ready to answer 24/7</li>
-                <li>✓ A live dashboard of recovered revenue</li>
-              </ul>
-              <div class="contact-divider"></div>
-              <div class="trust-badges">
-                <div class="trust-badge">No Credit Card</div>
-                <div class="trust-badge">Cancel Anytime</div>
-                <div class="trust-badge">Live in Minutes</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer id="footer">
-      <div class="footer-top">
-        <div class="footer-brand">
-          <div class="footer-logo">LeadPilot</div>
-          <p>The all-in-one lead capture platform for local service businesses. Never miss a lead again.</p>
-        </div>
-        <div class="footer-links-group">
-          <h4>Product</h4>
-          <ul>
-            <li><a href="#features">Missed-Call Text-Back</a></li>
-            <li><a href="#features">Unified Inbox</a></li>
-            <li><a href="#features">AI Receptionist</a></li>
-            <li><a href="app.html">Live Demo</a></li>
-          </ul>
-        </div>
-        <div class="footer-links-group">
-          <h4>Company</h4>
-          <ul>
-            <li><a href="#how-it-works">How It Works</a></li>
-            <li><a href="#pricing">Pricing</a></li>
-            <li><a href="login.html">Log in</a></li>
-            <li><a href="login.html?mode=signup">Start Free</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <p>© 2026 LeadPilot. All rights reserved.</p>
-        <p>Never miss a lead again.</p>
-      </div>
-    </footer>
-
-  </div><!-- end main-content -->
-
-  <script src="main.js"></script>
+  <script src="app.js"></script>
+  <script>initApp();</script>
 </body>
 </html>

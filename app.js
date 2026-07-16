@@ -129,65 +129,6 @@ function el(html) { const d = document.createElement('div'); d.innerHTML = html.
 function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
 
 /* ═══════════════════════════════════════════════
-   AUTH PAGE
-═══════════════════════════════════════════════ */
-function initAuthPage() {
-  const params = new URLSearchParams(location.search);
-  const isSignup = params.get('mode') === 'signup';
-  const plan = params.get('plan');
-
-  if (isSignup) setAuthMode('signup');
-  if (plan) {
-    document.querySelectorAll('.auth-plan-opt').forEach(opt => {
-      const input = opt.querySelector('input');
-      const match = input.value.toLowerCase() === plan.toLowerCase();
-      opt.classList.toggle('selected', match);
-      input.checked = match;
-    });
-  }
-
-  document.getElementById('tab-login').addEventListener('click', () => setAuthMode('login'));
-  document.getElementById('tab-signup').addEventListener('click', () => setAuthMode('signup'));
-  document.querySelectorAll('.auth-plan-opt').forEach(opt => {
-    opt.addEventListener('click', () => {
-      document.querySelectorAll('.auth-plan-opt').forEach(o => o.classList.remove('selected'));
-      opt.classList.add('selected');
-      opt.querySelector('input').checked = true;
-    });
-  });
-}
-
-function setAuthMode(mode) {
-  const signup = mode === 'signup';
-  document.getElementById('tab-login').classList.toggle('active', !signup);
-  document.getElementById('tab-signup').classList.toggle('active', signup);
-  document.getElementById('auth-heading').textContent = signup ? 'Start capturing leads' : 'Welcome back';
-  document.getElementById('auth-subheading').textContent = signup
-    ? 'Create your account — free for 14 days.'
-    : 'Log in to your LeadPilot dashboard.';
-  document.getElementById('auth-submit').textContent = signup ? 'Create account →' : 'Log in →';
-  document.querySelectorAll('.signup-only').forEach(e => { e.style.display = signup ? '' : 'none'; });
-}
-
-function submitAuth(e) {
-  e.preventDefault();
-  const btn = document.getElementById('auth-submit');
-  btn.textContent = 'Setting up…';
-  btn.disabled = true;
-  // Persist any business name entered so the app reflects it
-  const bizInput = document.getElementById('a-business');
-  if (bizInput && bizInput.value.trim()) {
-    const s = loadState();
-    s.business.name = bizInput.value.trim();
-    const planEl = document.querySelector('input[name="plan"]:checked');
-    if (planEl) s.business.plan = planEl.value;
-    saveState(s);
-  }
-  setTimeout(() => { location.href = 'app.html'; }, 900);
-  return false;
-}
-
-/* ═══════════════════════════════════════════════
    APP
 ═══════════════════════════════════════════════ */
 function initApp() {
@@ -632,7 +573,5 @@ function resetDemo() {
 }
 
 // expose for inline handlers
-window.initAuthPage = initAuthPage;
-window.submitAuth = submitAuth;
 window.initApp = initApp;
 window.sendReply = sendReply;
