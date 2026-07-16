@@ -90,18 +90,23 @@ const SPOTLIGHT_R = 260;
 
 // ── STAT COUNTERS (if present) ─────────────────
 (function initCounters() {
-  const counters = document.querySelectorAll('.stat-num');
+  const counters = document.querySelectorAll('.stat-num, .tm-num');
   if (!counters.length) return;
+
+  function fmt(n) {
+    return n >= 1000 ? n.toLocaleString('en-US') : String(n);
+  }
+
   const obs = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (!entry.isIntersecting) return;
       const el = entry.target;
-      const target = parseInt(el.dataset.target, 10);
+      const target = parseInt(el.dataset.target, 10) || 0;
       let current = 0;
       const step = target / 60;
       const iv = setInterval(() => {
         current = Math.min(current + step, target);
-        el.textContent = Math.floor(current);
+        el.textContent = fmt(Math.floor(current));
         if (current >= target) clearInterval(iv);
       }, 16);
       obs.unobserve(el);

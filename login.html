@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Log in · LeadPilot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Righteous&family=Nunito:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@1,400;1,500;1,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body class="auth-body">
+
+  <div class="auth-split">
+    <!-- LEFT: brand / value -->
+    <aside class="auth-brand">
+      <a href="index.html" class="auth-logo">
+        <svg width="26" height="26" viewBox="0 0 256 256" aria-hidden="true">
+          <circle cx="128" cy="128" r="30" fill="#E8A020"/>
+          <circle cx="128" cy="128" r="66" fill="none" stroke="#ffffff" stroke-width="14" opacity="0.85"/>
+          <circle cx="128" cy="128" r="104" fill="none" stroke="#ffffff" stroke-width="12" opacity="0.4"/>
+        </svg>
+        <span>Lead<em>Pilot</em></span>
+      </a>
+
+      <div class="auth-brand-copy">
+        <h1 class="auth-brand-title">Never miss<br/>another lead.</h1>
+        <p class="auth-brand-sub">The instant a call, text, or DM comes in, LeadPilot answers it — so you never lose a job to a missed call again.</p>
+
+        <ul class="auth-brand-list">
+          <li><span class="abl-dot call"></span> Missed calls texted back in seconds</li>
+          <li><span class="abl-dot fb"></span> Every lead source in one inbox</li>
+          <li><span class="abl-dot ai"></span> AI receptionist booking 24/7</li>
+        </ul>
+
+        <div class="auth-brand-stat">
+          <strong>391,000+</strong> leads recovered for local businesses
+        </div>
+      </div>
+    </aside>
+
+    <!-- RIGHT: form -->
+    <main class="auth-panel">
+      <div class="auth-card">
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="tab-login" type="button">Log in</button>
+          <button class="auth-tab" id="tab-signup" type="button">Start free</button>
+        </div>
+
+        <h2 class="auth-heading" id="auth-heading">Welcome back</h2>
+        <p class="auth-subheading" id="auth-subheading">Log in to your LeadPilot dashboard.</p>
+
+        <form id="auth-form" onsubmit="return submitAuth(event)">
+          <div class="auth-field signup-only" style="display:none">
+            <label for="a-business">Business name</label>
+            <input type="text" id="a-business" placeholder="e.g. Summit HVAC" />
+          </div>
+          <div class="auth-field">
+            <label for="a-email">Work email</label>
+            <input type="email" id="a-email" required placeholder="you@business.com" />
+          </div>
+          <div class="auth-field">
+            <label for="a-password">Password</label>
+            <input type="password" id="a-password" required placeholder="••••••••" />
+          </div>
+
+          <div class="auth-plan signup-only" style="display:none">
+            <label>Choose your plan</label>
+            <div class="auth-plan-opts">
+              <label class="auth-plan-opt"><input type="radio" name="plan" value="Starter"><span>Starter<small>$49/mo</small></span></label>
+              <label class="auth-plan-opt selected"><input type="radio" name="plan" value="Growth" checked><span>Growth<small>$129/mo</small></span></label>
+              <label class="auth-plan-opt"><input type="radio" name="plan" value="Pro"><span>Pro<small>$299/mo</small></span></label>
+            </div>
+          </div>
+
+          <button type="submit" class="auth-submit" id="auth-submit">Log in →</button>
+          <p class="auth-note signup-only" style="display:none">Free for 14 days · No credit card required</p>
+        </form>
+
+        <div class="auth-divider"><span>or</span></div>
+        <a href="app.html" class="auth-demo">Skip and explore the live demo →</a>
+      </div>
+      <p class="auth-foot"><a href="index.html">← Back to site</a></p>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+  <script>initAuthPage();</script>
+</body>
+</html>
