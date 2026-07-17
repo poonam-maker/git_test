@@ -5,7 +5,25 @@
 
 const STORE_KEY = 'leadpilot_state_v1';
 const CHANNEL_LABEL = { call: 'Call', ai: 'AI', fb: 'Facebook', google: 'Google', web: 'Web Chat', form: 'Web Form' };
-const CHANNEL_ICON  = { call: '☎', ai: '✦', fb: 'f', google: 'G', web: '💬', form: '▤' };
+const CHANNEL_ICON  = { call: 'phone', ai: 'sparkle', fb: 'message', google: 'globe', web: 'chat', form: 'doc' };
+
+/* line-icon set (stroke inherits from .ico svg in CSS) */
+const ICONS = {
+  phone:   '<svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.8.4 1.6.7 2.3a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.7-1.3a2 2 0 0 1 2.1-.4c.7.3 1.5.6 2.3.7a2 2 0 0 1 1.8 2z"/></svg>',
+  sparkle: '<svg viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>',
+  message: '<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.5 8.5 0 0 1-3.8-.9L3 20.5l1.4-4.2a8.4 8.4 0 0 1-.9-3.8A8.4 8.4 0 0 1 12 4a8.4 8.4 0 0 1 9 7.5z"/></svg>',
+  globe:   '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18z"/></svg>',
+  chat:    '<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z"/></svg>',
+  doc:     '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h6"/></svg>',
+  inbox:   '<svg viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.4 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.4-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.8 1.1z"/></svg>',
+  clock:   '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  coins:   '<svg viewBox="0 0 24 24"><circle cx="8" cy="8" r="5"/><path d="M18.1 8.6a5 5 0 1 1-6.5 6.5"/></svg>',
+  gear:    '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8 2 2 0 1 1-2.8 2.8 1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5 2 2 0 0 1-4 0 1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3 2 2 0 1 1-2.8-2.8 1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1 2 2 0 0 1 0-4 1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8 2 2 0 1 1 2.8-2.8 1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5 2 2 0 0 1 4 0 1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3 2 2 0 1 1 2.8 2.8 1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1 2 2 0 0 1 0 4 1.6 1.6 0 0 0-1.5 1z"/></svg>',
+  refresh: '<svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v5h-5"/></svg>',
+  check:   '<svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>',
+  ring:    '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/></svg>',
+};
+function icon(name) { return '<span class="ico">' + (ICONS[name] || '') + '</span>'; }
 
 /* ───────────── STATE ───────────── */
 function now() { return Date.now(); }
@@ -159,7 +177,7 @@ function initApp() {
         ? 'Active · answering calls & web chat 24/7'
         : 'Paused · leads will wait for a human';
       document.querySelector('.ai-orb').style.opacity = STATE.ai.enabled ? '' : '0.3';
-      toast('✦', STATE.ai.enabled ? 'AI Receptionist on' : 'AI Receptionist paused',
+      toast('sparkle', STATE.ai.enabled ? 'AI Receptionist on' : 'AI Receptionist paused',
         STATE.ai.enabled ? 'It will answer new calls and chats automatically.' : 'New conversations will queue for your team.');
     });
   }
@@ -229,16 +247,16 @@ function renderKPIs() {
   if (!row) return;
   const k = STATE.kpi;
   const cards = [
-    { ico: '📥', delta: '+12%', num: k.leadsToday, label: 'Leads captured today' },
-    { ico: '☎', delta: '+3', num: k.callsRecovered, label: 'Missed calls recovered' },
-    { ico: '⚡', delta: 'fast', num: '27s', label: 'Avg. response time' },
-    { ico: '💰', delta: '+8%', num: money(k.recoveredValue), label: 'Revenue recovered', gold: true },
+    { ico: 'inbox', delta: '+12%', num: k.leadsToday, label: 'Leads captured today' },
+    { ico: 'phone', delta: '+3', num: k.callsRecovered, label: 'Missed calls recovered' },
+    { ico: 'clock', delta: 'fast', num: '27s', label: 'Avg. response time' },
+    { ico: 'coins', delta: '+8%', num: money(k.recoveredValue), label: 'Revenue recovered', gold: true },
   ];
   row.innerHTML = '';
   cards.forEach(c => {
     row.appendChild(el(`
-      <div class="kpi ${c.gold ? 'gold' : ''}">
-        <div class="kpi-top"><span class="kpi-ico">${c.ico}</span><span class="kpi-delta">${c.delta}</span></div>
+      <div class="kpi ${c.gold ? 'accent' : ''}">
+        <div class="kpi-top"><span class="kpi-ico">${icon(c.ico)}</span><span class="kpi-delta">${c.delta}</span></div>
         <div class="kpi-num">${c.num}</div>
         <div class="kpi-label">${c.label}</div>
       </div>`));
@@ -263,7 +281,7 @@ function renderActivity() {
   items.forEach((l, i) => {
     feed.appendChild(el(`
       <div class="activity-item ${i === 0 && l._fresh ? 'fresh' : ''}">
-        <div class="act-icon bg-${l.channel}">${CHANNEL_ICON[l.channel]}</div>
+        <div class="act-icon bg-${l.channel}">${icon(CHANNEL_ICON[l.channel])}</div>
         <div class="act-body">
           <div class="act-title">${activityText(l)}</div>
           <div class="act-meta"><span class="chan-tag c-${l.channel}">${CHANNEL_LABEL[l.channel]}</span> · ${relTime(l.lastActivity)}${l.value ? ' · ' + money(l.value) + ' potential' : ''}</div>
@@ -280,7 +298,8 @@ function renderSources() {
   if (!wrap) return;
   const counts = {};
   STATE.leads.forEach(l => { counts[l.channel] = (counts[l.channel] || 0) + 1; });
-  const colors = { call: '#e05a5a', ai: '#e8a020', fb: '#5a78e0', google: '#5ac07a', web: '#a078dc', form: '#78c8dc' };
+  // brown family for human/phone, baby-blue family for digital
+  const colors = { call: '#7A5A42', ai: '#9A7757', fb: '#5E93AC', google: '#7FAAC0', web: '#9DC3D6', form: '#BBD7E2' };
   const total = STATE.leads.length || 1;
   const order = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
   wrap.innerHTML = '';
@@ -381,13 +400,13 @@ function renderMissed() {
     const recovered = replied;
     list.appendChild(el(`
       <div class="missed-card ${recovered ? 'recovered' : ''}">
-        <div class="missed-phone-ico">☎</div>
+        <div class="missed-phone-ico">${icon('phone')}</div>
         <div class="missed-info">
           <strong>${esc(l.name)}</strong>
           <div class="missed-num">Called ${relTime(l.lastActivity)}</div>
           <div class="missed-flow">
-            <div class="missed-flow-step"><span class="mf-check">✓</span> Auto-text sent in 24s</div>
-            <div class="missed-flow-step"><span class="mf-check">${replied ? '✓' : '…'}</span> ${replied ? 'Customer replied' : 'Waiting for reply'}</div>
+            <div class="missed-flow-step"><span class="mf-check ico">${ICONS.check}</span> Auto-text sent in 24s</div>
+            <div class="missed-flow-step"><span class="mf-check ico ${replied ? '' : 'pending'}">${replied ? ICONS.check : ICONS.ring}</span> ${replied ? 'Customer replied' : 'Waiting for reply'}</div>
           </div>
         </div>
         <div class="missed-right">
@@ -453,7 +472,7 @@ const SIM_SCENARIOS = [
       { from: 'sys', text: 'Missed call from ' + fakeNum(), time: now() },
       { from: 'out', sender: 'LeadPilot (auto)', ai: true, text: `Hi! Sorry we missed your call at ${STATE.business.name}. How can we help? Reply here and a team member will jump right in.`, time: now() },
     ],
-    toast: (name) => ['☎', 'Missed call recovered', `Auto-texted <strong>${name}</strong> in 24 seconds before they could call anyone else.`],
+    toast: (name) => ['phone', 'Missed call recovered', `Auto-texted <strong>${name}</strong> in 24 seconds before they could call anyone else.`],
     bump: (s) => { s.kpi.callsRecovered++; },
   },
   {
@@ -464,7 +483,7 @@ const SIM_SCENARIOS = [
       { from: 'in', text: 'Friday 1pm', time: now() },
       { from: 'out', sender: 'AI Receptionist', ai: true, text: "You're booked for Friday at 1pm. You'll get a reminder text. Thanks!", time: now() },
     ],
-    toast: (name) => ['✦', 'AI booked an appointment', `The AI receptionist qualified <strong>${name}</strong> and booked them — no staff needed.`],
+    toast: (name) => ['sparkle', 'AI booked an appointment', `The AI receptionist qualified <strong>${name}</strong> and booked them — no staff needed.`],
     bump: (s) => { s.kpi.afterHoursSaves++; },
   },
   {
@@ -472,7 +491,7 @@ const SIM_SCENARIOS = [
     build: (name) => [
       { from: 'in', text: 'Saw your Facebook ad — do you offer free estimates?', time: now() },
     ],
-    toast: (name) => ['f', 'New Facebook lead', `<strong>${name}</strong> messaged from your Facebook ad and landed in your inbox.`],
+    toast: (name) => ['message', 'New Facebook lead', `<strong>${name}</strong> messaged from your Facebook ad and landed in your inbox.`],
     bump: () => {},
   },
   {
@@ -481,7 +500,7 @@ const SIM_SCENARIOS = [
       { from: 'in', text: 'What are your hours?', time: now() },
       { from: 'out', sender: 'AI Receptionist', ai: true, text: "We're open 7am–7pm weekdays, but I can take your request any time. What do you need help with?", time: now() },
     ],
-    toast: (name) => ['💬', 'Web chat answered', `The AI answered <strong>${name}</strong> instantly on your website.`],
+    toast: (name) => ['chat', 'Web chat answered', `The AI answered <strong>${name}</strong> instantly on your website.`],
     bump: () => {},
   },
 ];
@@ -540,7 +559,7 @@ function toast(ico, title, body) {
   if (!wrap) return;
   const t = el(`
     <div class="toast">
-      <div class="toast-ico">${ico}</div>
+      <div class="toast-ico">${icon(ico)}</div>
       <div class="toast-body"><strong>${title}</strong><span>${body}</span></div>
     </div>`);
   wrap.appendChild(t);
@@ -554,7 +573,7 @@ function saveSettings() {
   STATE.business.industry = document.getElementById('set-industry').value.trim();
   saveState(STATE);
   applyBusinessToUI();
-  toast('⚙', 'Settings saved', 'Your business profile and automation are up to date.');
+  toast('gear', 'Settings saved', 'Your business profile and automation are up to date.');
 }
 
 function resetDemo() {
@@ -569,7 +588,7 @@ function resetDemo() {
   setBell(0);
   applyBusinessToUI();
   renderAll();
-  toast('↻', 'Demo reset', 'Fresh sample data loaded. Explore away!');
+  toast('refresh', 'Demo reset', 'Fresh sample data loaded. Explore away!');
 }
 
 // expose for inline handlers
