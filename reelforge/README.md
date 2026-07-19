@@ -56,7 +56,31 @@ npm run dev                   # http://localhost:3000
 
 **Demo login** (after seeding): `demo@reelforge.app` / `password123`
 
-No Postgres handy? Spin one up quickly:
+### Or: one command with Docker
+
+Boots Postgres + the app together (schema is applied automatically, ffmpeg is
+baked in so real exports render in-container):
+
+```bash
+cd reelforge
+docker compose up --build          # → http://localhost:3000
+```
+
+Works with **zero keys** (mock AI, local storage, in-process jobs). For real
+editing, create a `.env` next to `docker-compose.yml` first:
+
+```bash
+NEXTAUTH_SECRET=<openssl rand -base64 32>
+AI_PROVIDER=claude
+ANTHROPIC_API_KEY=sk-ant-...   # clip selection + copywriting
+OPENAI_API_KEY=sk-...          # Whisper transcription
+```
+
+To also run the durable BullMQ worker + Redis:
+`docker compose --profile scale up --build` (then set `JOB_DRIVER=redis` and
+`REDIS_URL=redis://redis:6379` in that `.env`).
+
+No Postgres handy (non-Docker)? Spin one up quickly:
 
 ```bash
 docker run --name reelforge-db -e POSTGRES_USER=reelforge \

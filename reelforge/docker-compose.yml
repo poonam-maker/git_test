@@ -1,0 +1,89 @@
+# ReelForge — one-command local stack.
+#
+#   1. (optional) create a .env file next to this one with your keys:
+#        NEXTAUTH_SECRET=<openssl rand -base64 32>
+#        AI_PROVIDER=claude            # real editing (omit for offline mock mode)
+#        ANTHROPIC_API_KEY=sk-ant-...  # clip selection + copywriting
+#        OPENAI_API_KEY=sk-...         # Whisper transcription
+#   2. docker compose up --build
+#   3. open http://localhost:3000
+#
+# Defaults work with ZERO keys (mock AI, local storage, in-process jobs).
+# ffmpeg is baked into the image, so real exports render inside the container.
+#
+# To also run the durable BullMQ worker + Redis:
+#   docker compose --profile scale up --build
+#   ...and set JOB_DRIVER=redis and REDIS_URL=redis://redis:6379 in your .env
+#   so the web app enqueues to the worker instead of running jobs inline.
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: reelforge
+      POSTGRES_PASSWORD: reelforge
+      POSTGRES_DB: reelforge
+    ports:
+      - "5432:5432"
+    volumes:
+      - reelforge-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U reelforge"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  web:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    volumes:
+      - reelforge-storage:/app/storage
+    environment:
+      DATABASE_URL: postgresql://reelforge:reelforge@db:5432/reelforge?schema=public
+      NEXTAUTH_URL: http://localhost:3000
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-dev-only-insecure-secret-change-me-please}
+      STORAGE_DRIVER: local
+      AI_PROVIDER: ${AI_PROVIDER:-mock}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-claude-opus-4-8}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      JOB_DRIVER: ${JOB_DRIVER:-inline}
+      REDIS_URL: ${REDIS_URL:-}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+
+  # ── optional: durable job queue (docker compose --profile scale up) ──
+  redis:
+    image: redis:7
+    profiles: ["scale"]
+    ports:
+      - "6379:6379"
+
+  worker:
+    build: .
+    profiles: ["scale"]
+    command: npm run worker
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - reelforge-storage:/app/storage
+    environment:
+      DATABASE_URL: postgresql://reelforge:reelforge@db:5432/reelforge?schema=public
+      STORAGE_DRIVER: local
+      AI_PROVIDER: ${AI_PROVIDER:-mock}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-claude-opus-4-8}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      JOB_DRIVER: redis
+      REDIS_URL: redis://redis:6379
+
+volumes:
+  reelforge-db:
+  reelforge-storage:
