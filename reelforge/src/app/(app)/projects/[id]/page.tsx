@@ -24,6 +24,7 @@ export default async function ProjectPage({
     include: {
       video: true,
       brandKit: true,
+      editMaster: true,
       clips: {
         orderBy: { order: "asc" },
         include: {
@@ -112,6 +113,21 @@ export default async function ProjectPage({
       {project.status === "READY" && (
         <div className="mt-8">
           <ExportsRefresher projectId={project.id} />
+
+          {project.editMaster && (
+            <EditMasterCard
+              master={{
+                originalSec: project.editMaster.originalSec,
+                editedSec: project.editMaster.editedSec,
+                removedFillerCount: project.editMaster.removedFillerCount,
+                removedSilenceCount: project.editMaster.removedSilenceCount,
+                url: project.editMaster.storageKey
+                  ? storage.url(project.editMaster.storageKey)
+                  : null,
+              }}
+            />
+          )}
+
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-white">
               {project.clips.length} clips ready
@@ -172,6 +188,74 @@ export default async function ProjectPage({
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function EditMasterCard({
+  master,
+}: {
+  master: {
+    originalSec: number;
+    editedSec: number;
+    removedFillerCount: number;
+    removedSilenceCount: number;
+    url: string | null;
+  };
+}) {
+  const saved = Math.max(0, master.originalSec - master.editedSec);
+  const pct =
+    master.originalSec > 0 ? Math.round((saved / master.originalSec) * 100) : 0;
+
+  return (
+    <div className="card mb-6 border-brand-500/30 bg-brand-500/5">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="text-lg">✂️</span>
+            <h2 className="text-lg font-semibold text-white">Edited master</h2>
+          </div>
+          <p className="mt-1 text-sm text-ink-400">
+            Fillers and silences removed. Clips and exports below are cut from
+            this tightened video.
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2 text-xs">
+            <span className="badge bg-ink-800 text-ink-200">
+              {formatDuration(master.originalSec)} → {formatDuration(master.editedSec)}
+            </span>
+            {saved >= 1 && (
+              <span className="badge bg-emerald-500/15 text-emerald-300">
+                −{Math.round(saved)}s tighter ({pct}%)
+              </span>
+            )}
+            {master.removedFillerCount > 0 && (
+              <span className="badge bg-brand-500/15 text-brand-300">
+                {master.removedFillerCount} fillers cut
+              </span>
+            )}
+            {master.removedSilenceCount > 0 && (
+              <span className="badge bg-brand-500/15 text-brand-300">
+                {master.removedSilenceCount} silences cut
+              </span>
+            )}
+          </div>
+          {!master.url && (
+            <p className="mt-3 text-xs text-amber-300/90">
+              ffmpeg isn&apos;t available, so the tightened video wasn&apos;t
+              rendered — clips use the original. Install ffmpeg (it&apos;s
+              included in the Docker image) to get the edited master.
+            </p>
+          )}
+        </div>
+
+        {master.url && (
+          <video
+            src={master.url}
+            controls
+            className="max-h-56 w-full max-w-[220px] rounded-lg border border-white/10 bg-black"
+          />
+        )}
+      </div>
     </div>
   );
 }

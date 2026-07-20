@@ -7,6 +7,12 @@ export interface TranscriptSegment {
   text: string;
 }
 
+export interface TranscriptWord {
+  start: number; // seconds
+  end: number;
+  word: string;
+}
+
 export interface SilenceGap {
   start: number;
   end: number;

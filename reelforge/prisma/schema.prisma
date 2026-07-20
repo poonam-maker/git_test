@@ -145,11 +145,12 @@ model Project {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
-  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  brandKit  BrandKit? @relation(fields: [brandKitId], references: [id])
-  video     Video?
-  clips     Clip[]
-  jobs      ProcessingJob[]
+  workspace  Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  brandKit   BrandKit?   @relation(fields: [brandKitId], references: [id])
+  video      Video?
+  editMaster EditMaster?
+  clips      Clip[]
+  jobs       ProcessingJob[]
 
   @@index([workspaceId])
 }
@@ -161,9 +162,30 @@ model Video {
   originalName  String
   mimeType      String
   sizeBytes     Int
-  durationSec   Float? // filled after probe/processing
-  transcript    Json? // [{ start, end, text }]
+  durationSec   Float? // filled after processing (of the ORIGINAL upload)
+  transcript    Json? // segment-level: [{ start, end, text }]
+  words         Json? // word-level: [{ start, end, word }] — powers cuts + animated captions
   createdAt     DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+// The edited "master": the original with silences + filler words cut out.
+// Clips and exports are cut from this, and its transcript is remapped onto the
+// shortened timeline so captions stay aligned.
+model EditMaster {
+  id                  String    @id @default(cuid())
+  projectId           String    @unique
+  storageKey          String? // rendered edited-master file (null until DONE)
+  status              JobStatus @default(QUEUED)
+  originalSec         Float     @default(0)
+  editedSec           Float     @default(0)
+  removedFillerCount  Int       @default(0)
+  removedSilenceCount Int       @default(0)
+  removed             Json? // [{ start, end, type }] in ORIGINAL time (for the review list)
+  transcript          Json? // segment-level, remapped to the EDITED timeline
+  words               Json? // word-level, remapped to the EDITED timeline
+  createdAt           DateTime  @default(now())
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }

@@ -19,7 +19,7 @@ export async function GET(
 
   // Authorize: the key must belong to a video, brand-kit logo, or rendered
   // export owned by this workspace.
-  const [video, brandKit, exp] = await Promise.all([
+  const [video, brandKit, exp, master] = await Promise.all([
     prisma.video.findFirst({
       where: { storageKey: key, project: { workspaceId: ctx.workspace.id } },
     }),
@@ -32,15 +32,19 @@ export async function GET(
         clip: { project: { workspaceId: ctx.workspace.id } },
       },
     }),
+    prisma.editMaster.findFirst({
+      where: { storageKey: key, project: { workspaceId: ctx.workspace.id } },
+    }),
   ]);
-  if (!video && !brandKit && !exp) {
+  if (!video && !brandKit && !exp && !master) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
   try {
     const storage = getStorage();
     const buffer = await storage.get(key);
-    const contentType = video?.mimeType || (exp ? "video/mp4" : "application/octet-stream");
+    const contentType =
+      video?.mimeType || (exp || master ? "video/mp4" : "application/octet-stream");
     const headers: Record<string, string> = {
       "Content-Type": contentType,
       "Cache-Control": "private, max-age=3600",

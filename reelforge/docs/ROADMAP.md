@@ -3,7 +3,20 @@
 The MVP in this repo covers the full workflow with mock AI. Post-MVP, in
 priority order (revenue and stickiness first):
 
-## Next up (make it real)
+## Editor (edit first, then repurpose)
+
+- [x] **Auto-edit master** — word-level Whisper timings drive cutting of filler
+      words + silences; the transcript is remapped onto the shortened timeline
+      and the tightened video is rendered with ffmpeg (`src/lib/editor/`).
+- [x] **Animated captions** — word-by-word "karaoke" highlight burned into
+      exports via ASS `\k` timing (`buildKaraokeAss` in `src/lib/render.ts`).
+- [x] **Edit → repurpose flow** — clips and exports are cut from the edited
+      master, not the raw upload; the project page shows the edit summary + a
+      preview of the tightened video.
+- [ ] **Manual cut review** — per-cut toggle + adjustable aggressiveness slider.
+- [ ] **Motion polish** — auto zoom/punch-in on emphasis, transitions, b-roll.
+
+## Infrastructure
 
 - [x] **Real AI provider** — Claude for clip selection + brand-aware copy, Whisper
       for transcription (`AI_PROVIDER=claude`), with heuristic fallbacks.

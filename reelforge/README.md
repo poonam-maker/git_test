@@ -93,14 +93,18 @@ docker run --name reelforge-db -e POSTGRES_USER=reelforge \
 1. **Sign up** → a personal **workspace** + default **brand kit** are created.
 2. **New project** → pick a template (Talking-head, Vlog, Business promo, …).
 3. **Upload** a video → stored via the storage driver; a `Video` row is created.
-4. **Processing** is enqueued. The pipeline (`src/lib/jobs.ts`) runs:
-   transcribe → detect silence → suggest clips → generate captions → write
-   social copy. The project page polls `/api/projects/[id]/status`.
-5. **Review & edit** clips: fix captions, tweak AI titles/hooks/hashtags/CTA.
+4. **Processing** is enqueued. The pipeline (`src/lib/jobs.ts`) runs **edit
+   first, then repurpose**: transcribe (word-level) → **auto-edit master** (cut
+   filler words + silences, remap the transcript onto the shortened timeline,
+   render the tightened video with ffmpeg) → suggest clips → captions → social
+   copy. Clips are cut from the edited master. The page polls
+   `/api/projects/[id]/status`.
+5. **Review & edit**: see the edit summary (seconds saved, fillers/silences
+   cut) + the tightened video, then fix captions and tweak the AI copy per clip.
 6. **Export** per platform, or **bulk export** every clip at once (Pro feature).
-   The renderer (`src/lib/render.ts`) reframes each clip to the platform's
-   aspect ratio and burns in styled captions with ffmpeg; the page shows render
-   progress and a download link when each export is ready.
+   The renderer (`src/lib/render.ts`) cuts from the edited master, reframes to
+   the platform's aspect ratio, and burns in **word-by-word animated captions**;
+   the page shows render progress and a download link when each export is ready.
 
 The mock AI produces deterministic, plausible output so this all works offline.
 Set `AI_PROVIDER=claude` (with `ANTHROPIC_API_KEY`, and `OPENAI_API_KEY` for
