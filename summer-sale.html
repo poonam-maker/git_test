@@ -4,385 +4,485 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Pet Planet Summer Sale — 15% Off Pet Food In-Store</title>
-<meta name="description" content="Pet Planet Summer Sale: 15% off pet food, August 1–31. In-store only at our Brunette (Pitt Meadows) and Kamloops locations." />
+<meta name="description" content="Pet Planet Summer Sale: 15% off pet food, August 1–31. In-store only at our Brunette, Pitt Meadows and Kamloops locations." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Fraunces:ital,wght@0,600;0,700;1,600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <style>
+  /* Brand font files (Pet Planet Brand Guidelines v1.0, 2025) */
+  @font-face{
+    font-family:'Lexend Brand';
+    src:url('assets/fonts/Lexend-Light.ttf') format('truetype');
+    font-weight:300;
+    font-display:swap;
+  }
+  @font-face{
+    font-family:'Lexend Brand';
+    src:url('assets/fonts/Lexend-Bold.ttf') format('truetype');
+    font-weight:700;
+    font-display:swap;
+  }
+
   :root{
-    --cream:#f1d59a;
-    --cream-light:#f7e6bd;
-    --brown:#4a2a1c;
-    --brown-deep:#331c12;
-    --pink:#c23b6b;
-    --teal:#6fa9a0;
-    --paper:#fff8ec;
+    /* Pet Planet brand palette */
+    --bone:#E1CCBB;
+    --butter:#E8C77E;
+    --bark:#6A3D38;
+    --sage:#B7C4A5;
+    --black:#000000;
+    --white:#FFFFFF;
+    --bone-soft:#EEDFD1;
+    --pattern-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='90'%3E%3Cpath d='M20 15 C40 10 55 22 52 38 C50 50 36 56 24 50 C14 45 10 34 16 26 C20 21 27 21 29 27 C30 31 27 34 24 32' fill='none' stroke='%236A3D38' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E");
+    --pattern-tile-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='90'%3E%3Cpath d='M20 15 C40 10 55 22 52 38 C50 50 36 56 24 50 C14 45 10 34 16 26 C20 21 27 21 29 27 C30 31 27 34 24 32' fill='none' stroke='%23E1CCBB' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E");
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   html{scroll-behavior:smooth;}
   body{
-    font-family:'Nunito', sans-serif;
-    background:var(--paper);
-    color:var(--brown-deep);
-    line-height:1.5;
+    font-family:'Lexend Brand', 'Lexend', sans-serif;
+    font-weight:300;
+    background:var(--white);
+    color:var(--bark);
+    line-height:1.55;
   }
   img{max-width:100%;display:block;}
   a{color:inherit;}
+  .container{max-width:1120px;margin:0 auto;padding:0 28px;}
 
-  .container{max-width:1100px;margin:0 auto;padding:0 24px;}
+  h1,h2,h3,h4{
+    font-weight:300;
+    color:var(--bark);
+  }
+  .fw-bold{font-weight:700;}
+  .fw-medium{font-weight:500;}
+  .fw-semibold{font-weight:600;}
 
   /* ANNOUNCEMENT BAR */
   .announce{
-    background:var(--brown-deep);
-    color:var(--cream-light);
+    background:var(--bark);
+    color:var(--bone);
     text-align:center;
-    font-weight:700;
-    font-size:0.85rem;
+    font-weight:500;
+    font-size:0.82rem;
     letter-spacing:0.04em;
-    padding:10px 16px;
+    padding:11px 16px;
   }
-  .announce strong{color:var(--cream);}
+  .announce strong{font-weight:700;color:var(--butter);}
 
   /* HEADER */
   header{
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:18px 0;
+    padding:22px 0;
   }
-  .logo{
-    font-family:'Fraunces', serif;
-    font-weight:700;
-    font-style:italic;
-    font-size:1.6rem;
-    color:var(--brown-deep);
-  }
+  .logo img{height:34px;width:auto;}
   .header-cta{
-    background:var(--pink);
-    color:#fff;
-    padding:10px 20px;
-    border-radius:999px;
-    font-weight:800;
-    font-size:0.9rem;
+    background:var(--bark);
+    color:var(--bone-soft);
+    padding:12px 26px;
+    border-radius:6px;
+    font-weight:600;
+    font-size:0.85rem;
+    letter-spacing:0.03em;
     text-decoration:none;
-    box-shadow:0 4px 0 #8f2a4e;
   }
+
+  /* WAVE DIVIDERS */
+  .wave{
+    display:block;
+    width:100%;
+    height:auto;
+    position:relative;
+    line-height:0;
+  }
+  .wave svg{width:100%;height:60px;display:block;}
+  @media(min-width:768px){ .wave svg{height:90px;} }
 
   /* HERO */
   .hero{
-    position:relative;
-    background:radial-gradient(circle at 30% 20%, #6b4028, var(--brown-deep) 65%);
-    color:var(--cream-light);
+    background:var(--butter);
+    padding:56px 0 0;
     overflow:hidden;
-    padding:64px 0 72px;
-  }
-  .hero::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    opacity:0.12;
-    background-image:
-      radial-gradient(circle, transparent 18px, rgba(241,213,154,0) 19px),
-      repeating-radial-gradient(circle at 10% 20%, rgba(241,213,154,0.5) 0 2px, transparent 2px 60px),
-      repeating-radial-gradient(circle at 70% 60%, rgba(241,213,154,0.5) 0 2px, transparent 2px 80px);
-    pointer-events:none;
   }
   .hero-inner{
-    position:relative;
-    text-align:center;
-    max-width:760px;
-    margin:0 auto;
+    display:grid;
+    grid-template-columns:1.1fr 0.9fr;
+    gap:40px;
+    align-items:center;
+    padding-bottom:40px;
+  }
+  @media(max-width:860px){
+    .hero-inner{grid-template-columns:1fr;text-align:center;}
   }
   .date-badge{
     display:inline-block;
-    background:var(--cream);
-    color:var(--brown-deep);
-    font-family:'Baloo 2', sans-serif;
-    font-weight:800;
-    font-size:1.15rem;
-    padding:8px 26px;
+    background:var(--bark);
+    color:var(--bone-soft);
+    font-weight:600;
+    letter-spacing:0.06em;
+    font-size:0.85rem;
+    padding:8px 20px;
     border-radius:999px;
-    box-shadow:0 4px 0 rgba(0,0,0,0.25);
-    transform:rotate(-2deg);
-    margin-bottom:18px;
+    margin-bottom:20px;
   }
   .hero h1{
-    font-family:'Baloo 2', sans-serif;
-    font-weight:800;
-    font-size:clamp(3.2rem, 10vw, 6rem);
-    line-height:0.92;
-    letter-spacing:0.01em;
-    color:var(--brown-deep);
-    -webkit-text-stroke:6px var(--cream);
-    paint-order:stroke fill;
-    text-shadow:0 6px 0 rgba(0,0,0,0.15);
-    margin-bottom:8px;
+    font-weight:300;
+    font-size:clamp(2.8rem, 6vw, 4.6rem);
+    line-height:0.98;
+    letter-spacing:-0.01em;
+    margin-bottom:18px;
   }
-  .hero-tagline{
-    font-weight:800;
-    letter-spacing:0.08em;
-    color:var(--cream);
-    font-size:1.1rem;
-    margin:18px 0 26px;
+  .hero h1 .accent{font-weight:700;display:block;}
+  .hero-lede{
+    font-size:1.05rem;
+    font-weight:400;
+    max-width:440px;
+    margin-bottom:26px;
+    color:var(--bark);
   }
-  .offer-badge{
-    display:inline-block;
-    background:var(--cream);
-    color:var(--brown-deep);
-    border-radius:24px;
-    padding:18px 40px;
-    box-shadow:0 6px 0 rgba(0,0,0,0.25);
-    transform:rotate(1.5deg);
+  @media(max-width:860px){ .hero-lede{margin-left:auto;margin-right:auto;} }
+
+  .stat-row{
+    display:flex;
+    gap:14px;
+    align-items:center;
     margin-bottom:30px;
+    flex-wrap:wrap;
   }
-  .offer-badge .pct{
-    font-family:'Baloo 2', sans-serif;
-    font-weight:800;
-    font-size:clamp(2.6rem, 8vw, 3.6rem);
+  @media(max-width:860px){ .stat-row{justify-content:center;} }
+  .pct-pill{
+    background:var(--bark);
+    color:var(--white);
+    border-radius:16px;
+    padding:14px 24px;
+    text-align:center;
     line-height:1;
+  }
+  .pct-pill .num{
+    font-weight:700;
+    font-size:2.2rem;
     display:block;
   }
-  .offer-badge .of-what{
-    font-family:'Baloo 2', sans-serif;
-    font-weight:700;
-    font-size:1.3rem;
+  .pct-pill .lbl{
+    font-weight:500;
+    font-size:0.78rem;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    opacity:0.9;
   }
-  .instore-flag{
+  .instore-pill{
     display:inline-flex;
     align-items:center;
-    gap:8px;
-    background:var(--pink);
-    color:#fff;
-    font-weight:800;
-    font-size:0.95rem;
-    letter-spacing:0.05em;
-    padding:10px 22px;
-    border-radius:999px;
-    margin-bottom:30px;
+    gap:10px;
+    background:var(--bone-soft);
+    color:var(--bark);
+    font-weight:600;
+    font-size:0.9rem;
+    padding:12px 20px 12px 14px;
+    border-radius:16px;
   }
+  .instore-pill svg{width:22px;height:22px;flex-shrink:0;}
+
   .hero-cta-row{
     display:flex;
     gap:14px;
-    justify-content:center;
     flex-wrap:wrap;
   }
+  @media(max-width:860px){ .hero-cta-row{justify-content:center;} }
   .btn{
     display:inline-block;
-    font-weight:800;
-    font-size:1rem;
-    padding:14px 30px;
-    border-radius:999px;
+    font-weight:600;
+    font-size:0.95rem;
+    padding:14px 28px;
+    border-radius:8px;
     text-decoration:none;
-    transition:transform 0.15s ease;
   }
-  .btn:hover{transform:translateY(-2px);}
   .btn-primary{
-    background:var(--pink);
-    color:#fff;
-    box-shadow:0 5px 0 #8f2a4e;
+    background:var(--bark);
+    color:var(--bone-soft);
   }
-  .btn-secondary{
+  .btn-outline{
     background:transparent;
-    color:var(--cream-light);
-    border:2px solid var(--cream-light);
+    color:var(--bark);
+    border:2px solid var(--bark);
+  }
+
+  .hero-art{
+    position:relative;
+  }
+  .hero-art .art-panel{
+    background:var(--bone);
+    border-radius:28px;
+    padding:38px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero-art .art-panel::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    opacity:0.16;
+    background-image:var(--pattern-tile);
+    background-size:120px 90px;
+  }
+  .hero-art .bowl-icon{width:96px;height:96px;position:relative;}
+  .hero-art .big-pct{
+    font-weight:700;
+    font-size:4.2rem;
+    color:var(--bark);
+    line-height:1;
+    position:relative;
+  }
+  .hero-art .off-lbl{
+    font-weight:600;
+    font-size:1.15rem;
+    color:var(--bark);
+    letter-spacing:0.02em;
+    position:relative;
+  }
+  .hero-art .art-sub{
+    font-weight:400;
+    font-size:0.85rem;
+    color:var(--bark);
+    opacity:0.75;
+    position:relative;
+    text-align:center;
+  }
+
+  /* SECTION HEADERS */
+  .section-eyebrow{
+    text-align:center;
+    font-weight:600;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--bark);
+    opacity:0.6;
+    font-size:0.78rem;
+    margin-bottom:10px;
+  }
+  .section-title{
+    font-weight:300;
+    text-align:center;
+    font-size:clamp(1.7rem, 3.6vw, 2.4rem);
+    color:var(--bark);
+    margin-bottom:12px;
+  }
+  .section-title .fw-bold{font-weight:700;}
+  .section-sub{
+    text-align:center;
+    max-width:560px;
+    margin:0 auto 46px;
+    color:var(--bark);
+    opacity:0.8;
+    font-weight:400;
   }
 
   /* LOCATIONS */
   .locations{
-    padding:70px 0;
-    background:var(--cream-light);
-  }
-  .section-eyebrow{
-    text-align:center;
-    font-weight:800;
-    letter-spacing:0.1em;
-    text-transform:uppercase;
-    color:var(--pink);
-    font-size:0.85rem;
-    margin-bottom:8px;
-  }
-  .section-title{
-    font-family:'Baloo 2', sans-serif;
-    font-weight:800;
-    text-align:center;
-    font-size:clamp(1.8rem, 4vw, 2.6rem);
-    color:var(--brown-deep);
-    margin-bottom:10px;
-  }
-  .section-sub{
-    text-align:center;
-    max-width:560px;
-    margin:0 auto 44px;
-    color:#5a4130;
-    font-weight:600;
+    padding:70px 0 76px;
+    background:var(--bone-soft);
   }
   .store-grid{
     display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
-    gap:28px;
+    grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+    gap:26px;
   }
   .store-card{
-    background:var(--paper);
-    border-radius:20px;
-    padding:32px;
-    box-shadow:0 8px 24px rgba(74,42,28,0.12);
-    border:3px solid var(--brown-deep);
+    background:var(--white);
+    border-radius:18px;
+    padding:0 0 30px;
+    overflow:hidden;
+  }
+  .store-card .card-top{
+    background:var(--sage);
+    padding:26px 28px 34px;
     position:relative;
   }
-  .store-card .pin{
-    width:52px;height:52px;
+  .store-card .card-top .pin{
+    width:44px;height:44px;
     border-radius:50%;
-    background:var(--teal);
+    background:var(--bark);
     display:flex;align-items:center;justify-content:center;
+  }
+  .store-card .card-top .pin svg{width:22px;height:22px;fill:var(--bone-soft);}
+  .store-card .card-body{padding:22px 28px 0;}
+  .store-card h3{
+    font-weight:700;
+    font-size:1.25rem;
+    margin-bottom:4px;
+  }
+  .store-card .store-tag{
+    font-weight:500;
+    font-size:0.8rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--bark);
+    opacity:0.6;
     margin-bottom:16px;
   }
-  .store-card .pin svg{width:26px;height:26px;fill:#fff;}
-  .store-card h3{
-    font-family:'Baloo 2', sans-serif;
-    font-size:1.4rem;
-    font-weight:800;
-    color:var(--brown-deep);
-    margin-bottom:6px;
-  }
-  .store-card .store-city{
-    font-weight:700;
-    color:var(--pink);
-    margin-bottom:14px;
-  }
   .store-card p{
-    color:#5a4130;
-    font-weight:600;
+    color:var(--bark);
+    opacity:0.85;
+    font-weight:400;
     margin-bottom:20px;
-    font-size:0.95rem;
+    font-size:0.92rem;
   }
   .store-card .btn{
     padding:10px 22px;
-    font-size:0.9rem;
+    font-size:0.85rem;
   }
+  .no-other-wrap{text-align:center;margin-top:40px;}
   .no-other-note{
-    text-align:center;
-    margin-top:36px;
-    font-weight:700;
-    color:var(--brown-deep);
-    background:var(--cream);
     display:inline-block;
+    font-weight:500;
+    color:var(--bark);
+    background:var(--bone);
     padding:10px 22px;
-    border-radius:12px;
+    border-radius:10px;
+    font-size:0.85rem;
   }
-  .no-other-wrap{text-align:center;}
 
-  /* WHY SHOP */
-  .perks{
-    padding:60px 0;
-    background:var(--paper);
-  }
+  /* PERKS */
+  .perks{padding:66px 0 60px;background:var(--white);}
   .perks-grid{
     display:grid;
     grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
     gap:24px;
-    max-width:900px;
+    max-width:940px;
     margin:0 auto;
   }
-  .perk-item{
-    text-align:center;
-    padding:20px;
-  }
-  .perk-item .emoji-badge{
-    width:56px;height:56px;
-    background:var(--teal);
+  .perk-item{text-align:center;padding:18px;}
+  .perk-item .icon-badge{
+    width:58px;height:58px;
+    background:var(--bone);
     border-radius:50%;
-    margin:0 auto 14px;
+    margin:0 auto 16px;
     display:flex;align-items:center;justify-content:center;
   }
-  .perk-item .emoji-badge svg{width:28px;height:28px;fill:#fff;}
-  .perk-item h4{
-    font-family:'Baloo 2', sans-serif;
-    font-weight:700;
-    margin-bottom:6px;
-    color:var(--brown-deep);
-  }
-  .perk-item p{
-    color:#5a4130;
-    font-size:0.9rem;
-    font-weight:600;
-  }
+  .perk-item .icon-badge svg{width:28px;height:28px;fill:var(--bark);}
+  .perk-item h4{font-weight:700;font-size:1rem;margin-bottom:6px;}
+  .perk-item p{color:var(--bark);opacity:0.8;font-size:0.88rem;font-weight:400;}
 
   /* FINAL CTA */
   .final-cta{
-    background:var(--brown-deep);
-    color:var(--cream-light);
+    background:var(--bark);
+    color:var(--bone-soft);
     text-align:center;
-    padding:64px 0;
+    padding:64px 0 60px;
+    position:relative;
+    overflow:hidden;
   }
+  .final-cta::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    opacity:0.06;
+    background-image:var(--pattern-tile-light);
+    background-size:120px 90px;
+  }
+  .final-cta .container{position:relative;}
   .final-cta h2{
-    font-family:'Baloo 2', sans-serif;
-    font-weight:800;
-    font-size:clamp(1.8rem, 4vw, 2.6rem);
+    font-weight:300;
+    color:var(--bone-soft);
+    font-size:clamp(1.7rem, 3.6vw, 2.4rem);
     margin-bottom:14px;
   }
+  .final-cta h2 .fw-bold{font-weight:700;}
   .final-cta p{
-    max-width:520px;
+    max-width:480px;
     margin:0 auto 28px;
-    font-weight:600;
-    color:var(--cream);
+    font-weight:400;
+    color:var(--bone);
+  }
+  .final-cta .btn-primary{
+    background:var(--butter);
+    color:var(--bark);
   }
 
   /* FOOTER */
   footer{
-    background:var(--brown-deep);
-    color:rgba(247,230,189,0.65);
+    background:var(--bark);
+    color:var(--bone);
     text-align:center;
-    padding:28px 0 34px;
-    font-size:0.82rem;
-    border-top:1px solid rgba(247,230,189,0.15);
+    padding:30px 0 36px;
+    font-size:0.8rem;
+    border-top:1px solid rgba(225,204,187,0.2);
   }
+  footer .footer-logo{margin-bottom:14px;}
+  footer .footer-logo img{height:24px;margin:0 auto;filter:brightness(0) invert(1) opacity(0.9);}
   footer .fine-print{
     max-width:640px;
     margin:0 auto 12px;
+    opacity:0.75;
+    font-weight:300;
   }
-  footer .footer-logo{
-    font-family:'Fraunces', serif;
-    font-style:italic;
-    font-weight:700;
-    color:var(--cream-light);
-    font-size:1.2rem;
-    margin-bottom:10px;
-  }
+  footer .copyright{opacity:0.6;font-weight:300;}
 
   @media (max-width:600px){
-    header{flex-direction:column;gap:12px;text-align:center;}
+    header{flex-direction:column;gap:14px;text-align:center;}
   }
 </style>
 </head>
 <body>
 
   <div class="announce">
-    <strong>SUMMER SALE</strong> — 15% Off Pet Food · Aug 1&ndash;31 · In-Store Only
+    <strong>SUMMER SALE</strong> &nbsp;·&nbsp; 15% Off Pet Food &nbsp;·&nbsp; Aug 1&ndash;31 &nbsp;·&nbsp; In-Store Only
   </div>
 
   <header class="container">
-    <div class="logo">Pet Planet</div>
+    <a class="logo" href="#top" aria-label="Pet Planet">
+      <img src="assets/pet-planet-logo.png" alt="Pet Planet" />
+    </a>
     <a href="#locations" class="header-cta">Find My Store</a>
   </header>
 
   <!-- HERO -->
-  <section class="hero">
+  <section class="hero" id="top">
     <div class="container hero-inner">
-      <span class="date-badge">August 1 to 31</span>
-      <h1>SUMMER<br/>SALE</h1>
-      <p class="hero-tagline">DON'T MISS OUT!</p>
+      <div class="hero-copy">
+        <span class="date-badge">August 1 &ndash; 31</span>
+        <h1>Our Summer Sale<span class="accent">is here.</span></h1>
+        <p class="hero-lede">Stock up on the food your pet loves and save. This one's for our in-store shoppers only &mdash; come say hi.</p>
 
-      <div class="offer-badge">
-        <span class="pct">15% OFF</span>
-        <span class="of-what">Pet Food*</span>
-      </div>
-      <br/>
-      <span class="instore-flag">📍 In-Store Only — 2 Locations</span>
+        <div class="stat-row">
+          <div class="pct-pill">
+            <span class="num">15%</span>
+            <span class="lbl">Off Pet Food</span>
+          </div>
+          <span class="instore-pill">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 2C7.6 2 4 5.6 4 10c0 5.4 7 11.5 7.3 11.7.2.2.5.3.7.3s.5-.1.7-.3C13 21.5 20 15.4 20 10c0-4.4-3.6-8-8-8zm0 11c-1.7 0-3-1.3-3-3s1.3-3 3-3 3 1.3 3 3-1.3 3-3 3z" fill="currentColor"/></svg>
+            In-Store Only &mdash; 3 Locations
+          </span>
+        </div>
 
-      <div class="hero-cta-row">
-        <a href="#locations" class="btn btn-primary">See Store Locations</a>
-        <a href="#details" class="btn btn-secondary">Sale Details</a>
+        <div class="hero-cta-row">
+          <a href="#locations" class="btn btn-primary">See Store Locations</a>
+          <a href="#details" class="btn btn-outline">Sale Details</a>
+        </div>
       </div>
+
+      <div class="hero-art">
+        <div class="art-panel">
+          <svg class="bowl-icon" viewBox="0 0 100 100" fill="none">
+            <path d="M50 8 C54 8 57 12 55 17 L52 26 C51.5 28 48.5 28 48 26 L45 17 C43 12 46 8 50 8Z" fill="var(--bark)"/>
+            <circle cx="66" cy="20" r="6" fill="var(--bark)"/>
+            <circle cx="34" cy="20" r="5" fill="var(--bark)"/>
+            <path d="M14 46 H86 C86 68 70 82 50 82 C30 82 14 68 14 46Z" fill="var(--bark)"/>
+            <path d="M14 46 C14 46 26 52 50 52 C74 52 86 46 86 46" stroke="var(--bone)" stroke-width="3" fill="none"/>
+          </svg>
+          <span class="big-pct">15%</span>
+          <span class="off-lbl">Off Pet Food</span>
+          <span class="art-sub">Aug 1&ndash;31, in-store only</span>
+        </div>
+      </div>
+    </div>
+    <div class="wave">
+      <svg viewBox="0 0 1200 90" preserveAspectRatio="none"><path d="M0,40 C300,90 900,0 1200,50 L1200,90 L0,90 Z" fill="#EEDFD1"/></svg>
     </div>
   </section>
 
@@ -390,28 +490,44 @@
   <section class="locations" id="locations">
     <div class="container">
       <div class="section-eyebrow">Where the sale is happening</div>
-      <h2 class="section-title">This Sale Is In-Store Only</h2>
-      <p class="section-sub">15% off pet food is valid exclusively at these two Pet Planet locations — bring your furry friend and stock up before August 31!</p>
+      <h2 class="section-title">In-store only, at <span class="fw-bold">3 locations</span></h2>
+      <p class="section-sub">15% off pet food is valid exclusively at these Pet Planet stores &mdash; come by and stock up before August 31.</p>
 
       <div class="store-grid">
         <div class="store-card">
-          <div class="pin">
+          <div class="card-top"><div class="pin">
             <svg viewBox="0 0 24 24"><path d="M12 2C7.6 2 4 5.6 4 10c0 5.4 7 11.5 7.3 11.7.2.2.5.3.7.3s.5-.1.7-.3C13 21.5 20 15.4 20 10c0-4.4-3.6-8-8-8zm0 11c-1.7 0-3-1.3-3-3s1.3-3 3-3 3 1.3 3 3-1.3 3-3 3z"/></svg>
+          </div></div>
+          <div class="card-body">
+            <h3>Pet Planet Brunette</h3>
+            <div class="store-tag">In-Store Sale</div>
+            <p>Save 15% on pet food at our Brunette location, in-store only, through August 31.</p>
+            <a class="btn btn-primary" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Pet+Planet+Brunette">Get Directions &rarr;</a>
           </div>
-          <h3>Pet Planet — Brunette</h3>
-          <div class="store-city">Pitt Meadows, BC</div>
-          <p>Stop by our Brunette store in Pitt Meadows to save 15% on pet food, in-store only, through August 31.</p>
-          <a class="btn btn-primary" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Pet+Planet+Brunette+Pitt+Meadows">Get Directions →</a>
         </div>
 
         <div class="store-card">
-          <div class="pin">
+          <div class="card-top"><div class="pin">
             <svg viewBox="0 0 24 24"><path d="M12 2C7.6 2 4 5.6 4 10c0 5.4 7 11.5 7.3 11.7.2.2.5.3.7.3s.5-.1.7-.3C13 21.5 20 15.4 20 10c0-4.4-3.6-8-8-8zm0 11c-1.7 0-3-1.3-3-3s1.3-3 3-3 3 1.3 3 3-1.3 3-3 3z"/></svg>
+          </div></div>
+          <div class="card-body">
+            <h3>Pet Planet Pitt Meadows</h3>
+            <div class="store-tag">In-Store Sale</div>
+            <p>Save 15% on pet food at our Pitt Meadows location, in-store only, through August 31.</p>
+            <a class="btn btn-primary" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Pet+Planet+Pitt+Meadows">Get Directions &rarr;</a>
           </div>
-          <h3>Pet Planet — Kamloops</h3>
-          <div class="store-city">Kamloops, BC</div>
-          <p>Head to our Kamloops location to save 15% on pet food, in-store only, through August 31.</p>
-          <a class="btn btn-primary" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Pet+Planet+Kamloops">Get Directions →</a>
+        </div>
+
+        <div class="store-card">
+          <div class="card-top"><div class="pin">
+            <svg viewBox="0 0 24 24"><path d="M12 2C7.6 2 4 5.6 4 10c0 5.4 7 11.5 7.3 11.7.2.2.5.3.7.3s.5-.1.7-.3C13 21.5 20 15.4 20 10c0-4.4-3.6-8-8-8zm0 11c-1.7 0-3-1.3-3-3s1.3-3 3-3 3 1.3 3 3-1.3 3-3 3z"/></svg>
+          </div></div>
+          <div class="card-body">
+            <h3>Pet Planet Kamloops</h3>
+            <div class="store-tag">In-Store Sale</div>
+            <p>Save 15% on pet food at our Kamloops location, in-store only, through August 31.</p>
+            <a class="btn btn-primary" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Pet+Planet+Kamloops">Get Directions &rarr;</a>
+          </div>
         </div>
       </div>
 
@@ -421,26 +537,32 @@
     </div>
   </section>
 
-  <!-- PERKS / DETAILS -->
+  <!-- DETAILS -->
   <section class="perks" id="details">
     <div class="container">
       <div class="section-eyebrow">Sale Details</div>
-      <h2 class="section-title">Everything You Need to Know</h2>
+      <h2 class="section-title">Everything you need to know</h2>
       <div class="perks-grid">
         <div class="perk-item">
-          <div class="emoji-badge"><svg viewBox="0 0 24 24"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zM9 17l-4-4 1.4-1.4L9 14.2l7.6-7.6L18 8z"/></svg></div>
+          <div class="icon-badge">
+            <svg viewBox="0 0 24 24"><path d="M12 3.2c.9 0 1.6.9 1.3 1.8l-.9 2.8c-.2.6-1 .6-1.2 0l-.9-2.8c-.3-.9.4-1.8 1.3-1.8zM17 5.5a1.4 1.4 0 110 2.8 1.4 1.4 0 010-2.8zM7.3 5.2a1.3 1.3 0 110 2.6 1.3 1.3 0 010-2.6zM3.5 11h17c0 5.7-3.8 10-8.5 10s-8.5-4.3-8.5-10z"/></svg>
+          </div>
           <h4>15% Off Pet Food</h4>
           <p>Save on the food your pet loves, storewide, for the whole month.</p>
         </div>
         <div class="perk-item">
-          <div class="emoji-badge"><svg viewBox="0 0 24 24"><path d="M12 2l2.2 6.8H21l-5.6 4.1 2.1 6.9L12 15.8 6.5 19.8l2.1-6.9L3 8.8h6.8z"/></svg></div>
-          <h4>August 1–31 Only</h4>
-          <p>The sale runs all month long — plenty of time to stock up.</p>
+          <div class="icon-badge">
+            <svg viewBox="0 0 24 24"><path d="M7 2.5a1 1 0 011 1V4h8v-.5a1 1 0 012 1V4h.5A2.5 2.5 0 0121 6.5v12A2.5 2.5 0 0118.5 21h-13A2.5 2.5 0 013 18.5v-12A2.5 2.5 0 015.5 4H6v-.5a1 1 0 011-1zM5 10v8.5c0 .3.2.5.5.5h13a.5.5 0 00.5-.5V10H5z"/></svg>
+          </div>
+          <h4>August 1&ndash;31 Only</h4>
+          <p>The sale runs all month long &mdash; plenty of time to stock up.</p>
         </div>
         <div class="perk-item">
-          <div class="emoji-badge"><svg viewBox="0 0 24 24"><path d="M12 2C7.6 2 4 5.6 4 10c0 5.4 7 11.5 7.3 11.7.2.2.5.3.7.3s.5-.1.7-.3C13 21.5 20 15.4 20 10c0-4.4-3.6-8-8-8zm0 11c-1.7 0-3-1.3-3-3s1.3-3 3-3 3 1.3 3 3-1.3 3-3 3z"/></svg></div>
-          <h4>2 Locations Only</h4>
-          <p>Valid in-store at Brunette (Pitt Meadows) and Kamloops only.</p>
+          <div class="icon-badge">
+            <svg viewBox="0 0 24 24"><path d="M12 2C7.6 2 4 5.6 4 10c0 5.4 7 11.5 7.3 11.7.2.2.5.3.7.3s.5-.1.7-.3C13 21.5 20 15.4 20 10c0-4.4-3.6-8-8-8zm0 11c-1.7 0-3-1.3-3-3s1.3-3 3-3 3 1.3 3 3-1.3 3-3 3z"/></svg>
+          </div>
+          <h4>3 Locations Only</h4>
+          <p>Valid in-store at Brunette, Pitt Meadows and Kamloops only.</p>
         </div>
       </div>
     </div>
@@ -449,17 +571,17 @@
   <!-- FINAL CTA -->
   <section class="final-cta">
     <div class="container">
-      <h2>See You In Store!</h2>
-      <p>Bring this page up at checkout and save 15% on pet food. Sale ends August 31 — don't miss out.</p>
+      <h2>See you <span class="fw-bold">in store!</span></h2>
+      <p>Bring your pet's favourite food to checkout and save 15%. Sale ends August 31 &mdash; don't miss out.</p>
       <a href="#locations" class="btn btn-primary">Find My Nearest Store</a>
     </div>
   </section>
 
   <footer>
     <div class="container">
-      <div class="footer-logo">Pet Planet</div>
-      <p class="fine-print">*15% off pet food. Valid in-store only at the Brunette (Pitt Meadows) and Kamloops locations, August 1–31. Not valid online or at other locations. Cannot be combined with other offers. While supplies last. See store for full details.</p>
-      <p>© 2026 Pet Planet. All rights reserved.</p>
+      <div class="footer-logo"><img src="assets/pet-planet-logo.png" alt="Pet Planet" /></div>
+      <p class="fine-print">*15% off pet food. Valid in-store only at the Brunette, Pitt Meadows and Kamloops locations, August 1&ndash;31. Not valid online or at other locations. Cannot be combined with other offers. While supplies last. See store for full details.</p>
+      <p class="copyright">&copy; 2026 Pet Planet. All rights reserved.</p>
     </div>
   </footer>
 
