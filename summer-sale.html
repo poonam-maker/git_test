@@ -210,48 +210,40 @@
   .hero-art{
     position:relative;
   }
-  .hero-art .art-panel{
-    background:var(--bone);
+  .hero-art .art-photo{
     border-radius:28px;
-    padding:38px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:10px;
-    position:relative;
     overflow:hidden;
+    position:relative;
+    box-shadow:0 18px 40px rgba(74,42,28,0.22);
   }
-  .hero-art .art-panel::before{
-    content:"";
+  .hero-art .art-photo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    aspect-ratio:4/3;
+  }
+  .hero-art .art-badge{
     position:absolute;
-    inset:0;
-    opacity:0.16;
-    background-image:var(--pattern-tile);
-    background-size:120px 90px;
-  }
-  .hero-art .bowl-icon{width:96px;height:96px;position:relative;}
-  .hero-art .big-pct{
-    font-weight:700;
-    font-size:4.2rem;
-    color:var(--bark);
+    bottom:20px;
+    left:20px;
+    background:var(--bone-soft);
+    border-radius:16px;
+    padding:14px 22px;
+    text-align:center;
     line-height:1;
-    position:relative;
+    box-shadow:0 8px 20px rgba(74,42,28,0.25);
   }
-  .hero-art .off-lbl{
-    font-weight:600;
-    font-size:1.15rem;
+  .hero-art .art-badge .big-pct{
+    font-weight:700;
+    font-size:2.4rem;
     color:var(--bark);
-    letter-spacing:0.02em;
-    position:relative;
+    display:block;
   }
-  .hero-art .art-sub{
-    font-weight:400;
+  .hero-art .art-badge .off-lbl{
+    font-weight:600;
     font-size:0.85rem;
     color:var(--bark);
-    opacity:0.75;
-    position:relative;
-    text-align:center;
+    letter-spacing:0.02em;
   }
 
   /* SECTION HEADERS */
@@ -494,17 +486,12 @@
       </div>
 
       <div class="hero-art">
-        <div class="art-panel">
-          <svg class="bowl-icon" viewBox="0 0 100 100" fill="none">
-            <path d="M50 8 C54 8 57 12 55 17 L52 26 C51.5 28 48.5 28 48 26 L45 17 C43 12 46 8 50 8Z" fill="var(--bark)"/>
-            <circle cx="66" cy="20" r="6" fill="var(--bark)"/>
-            <circle cx="34" cy="20" r="5" fill="var(--bark)"/>
-            <path d="M14 46 H86 C86 68 70 82 50 82 C30 82 14 68 14 46Z" fill="var(--bark)"/>
-            <path d="M14 46 C14 46 26 52 50 52 C74 52 86 46 86 46" stroke="var(--bone)" stroke-width="3" fill="none"/>
-          </svg>
-          <span class="big-pct">15%</span>
-          <span class="off-lbl">Off Pet Food</span>
-          <span class="art-sub">Aug 1&ndash;31, in-store only</span>
+        <div class="art-photo">
+          <img src="assets/hero-dog-food.jpg" alt="Dog enjoying pet food from a bowl, part of the Pet Planet Summer Sale" />
+          <div class="art-badge">
+            <span class="big-pct">15%</span>
+            <span class="off-lbl">Off Pet Food</span>
+          </div>
         </div>
       </div>
     </div>
